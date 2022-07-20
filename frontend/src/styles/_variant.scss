@@ -1,9 +1,10 @@
 $font-main: "Proxima Nova Alt";
 $font-second: "Shadows-Into-Light";
-$back-color: #000;
-$primary-color: #3c23cd;
+$back-color: #1a1a1a;
+$primary-color: #c300ff;
 $card-shadow: 0px 4px 20px 5px rgba(0, 0, 0, 0.5);
-
+$wallet-btn-color: transparent;
+$header-height: 64px;
 * {
     font-family: $font-main;
 }

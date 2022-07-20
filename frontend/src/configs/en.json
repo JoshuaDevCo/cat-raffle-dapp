@@ -1,0 +1,11 @@
+{
+  "lang": "en",
+  "translation": {
+    "TITLE": "White Label Raffle",
+    "MENU": {
+      "HOME": "Home",
+      "CREATE": "Create",
+      "RAFFLE_HOUSE": "Raffle House"
+    }
+  }
+}
