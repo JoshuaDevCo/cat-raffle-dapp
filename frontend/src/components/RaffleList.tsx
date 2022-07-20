@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getRaffleGlobalState } from "../contexts/transaction";
 import RaffleCard from "./RaffleCard";
 
-export default function RaffleList() {
+export default function RaffleList(props: any) {
     const [tab, setTab] = useState("live");
     const [liveRaffleList, setLiveRaffleList] = useState<any>();
     const [endRaffleList, setEndRaffleList] = useState<any>();

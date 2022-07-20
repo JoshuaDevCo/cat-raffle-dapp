@@ -9,6 +9,7 @@ import { useI18n } from "../services/i18n";
 import { templates } from "../configs";
 import ToggleColorMode from "../components/ToggleColorMode";
 import { DISCORD, TWITTER } from "../config";
+import { dashboard } from "../configs/dashboard";
 
 function RaffleApp({ Component, pageProps }) {
   useI18n();
@@ -34,6 +35,7 @@ function RaffleApp({ Component, pageProps }) {
               startLoading={startLoading}
               closeLoading={closeLoading}
               t={t}
+              {...dashboard}
             />
             <ToastContainer style={{ fontSize: 14 }} />
             <PageLoading loading={loading} />
