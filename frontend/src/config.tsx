@@ -18,3 +18,7 @@ export const PREY_DECIMALS = 1000000000;
 
 export const DEFAULT_PAY_TYPE = 'SOL';
 export const TOKEN_PAY_TYPE = '$PREY';
+
+export const FLOATING_PTS_FIXED_DECIMAL = 2;
+
+export const DEBUG = 1;
