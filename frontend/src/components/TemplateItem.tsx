@@ -86,7 +86,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
                 height={imageHeight}
                 src={src || image}
                 alt={alt}
-                showLoading={showLoading && <HashLoader size={32} color="#c300ff" />} 
+                showLoading={showLoading && <HashLoader size={32} color="#3c23cd" />} 
                 fit={fit}
               ></Image>
             </CardMedia>
@@ -181,8 +181,8 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
             map(subItems, ({ label, key }) => (
               <Grid key={`grid#${key}`} item {...breakpoints}>
                 <Paper key={`paper#${key}`} elevation={elevation} sx={sx}>
-                  <Typography component="h6">{t(processFunc(label))}</Typography>
-                  <Typography component="p">
+                  <Typography key={`typography${key}#h6`} component="h6">{t(processFunc(label))}</Typography>
+                  <Typography key={`typography${key}#p`} component="p">
                     {get(dataModel, key, 0)}
                   </Typography>
                 </Paper>
@@ -302,11 +302,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
           color="inherit"
           {...toggleIconProps}
         >
-          {isDarkMode ? (
-            <Icons icon="Brightness7Icon" color={finalColor} />
-          ) : (
-            <Icons icon="Brightness4Icon" color={finalColor} />
-          )}
+          <Icons key={`icon#${key}`} icon={isDarkMode?"Brightness7Icon":"Brightness4Icon"} color={finalColor} />
         </IconButton>
       );
     },
@@ -348,7 +344,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
     },
     image: () => {
       const { src, image, alt = '', showLoading, ...imageProps } = otherProps;
-      return <Image key={key} src={src || (isFunction(image) ? image(pipe) : image)} alt={alt} showLoading={showLoading && <HashLoader size={32} color="#c300ff" />} {...imageProps} />
+      return <Image key={key} src={src || (isFunction(image) ? image(pipe) : image)} alt={alt} showLoading={showLoading && <HashLoader size={32} color="#3c23cd" />} {...imageProps} />
     },
     wallet: () => (
       <WalletDialogProvider key={key}>

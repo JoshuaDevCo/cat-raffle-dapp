@@ -162,7 +162,7 @@ export default function RaffleItemPage(props: {
         <div className="create-content">
           <div className="nft-info">
             <div className="media">
-              <Image src={image} showLoading alt="" />
+              {image && <Image src={image} showLoading alt="" />}
             </div>
             <div className="info-item">
               <label>Name: </label>
