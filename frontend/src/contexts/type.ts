@@ -1,24 +1,50 @@
-import * as anchor from '@project-serum/anchor';
-import { PublicKey } from '@solana/web3.js';
+import * as anchor from "@project-serum/anchor";
+import { PublicKey } from "@solana/web3.js";
 
 export interface GlobalPool {
-    superAdmin: PublicKey,
+  superAdmin: PublicKey;
 }
 
 export interface RafflePool {
-    creator: PublicKey,
-    nftMint: PublicKey,
-    count: anchor.BN,
-    winnerCount: anchor.BN,
-    noRepeat: anchor.BN,
-    maxEntrants: anchor.BN,
-    endTimestamp: anchor.BN,
-    ticketPricePrey: anchor.BN,
-    ticketPriceSol: anchor.BN,
-    whitelisted: anchor.BN,
-    indexes: anchor.BN[],
-    claimedWinner: anchor.BN[],
-    winner: PublicKey[],
-    entrants: PublicKey[],
-    raffleKey: string
-}   
+  creator: PublicKey;
+  nftMint: PublicKey;
+  count: anchor.BN;
+  winnerCount: anchor.BN;
+  noRepeat: anchor.BN;
+  maxEntrants: anchor.BN;
+  endTimestamp: anchor.BN;
+  ticketPricePrey: anchor.BN;
+  ticketPriceSol: anchor.BN;
+  whitelisted: anchor.BN;
+  indexes: anchor.BN[];
+  claimedWinner: anchor.BN[];
+  winner: PublicKey[];
+  entrants: PublicKey[];
+  raffleKey: string;
+}
+export interface NFTDetail {
+  image: string;
+  name: string;
+  description: string;
+  raffleData: NFTRaffleData;
+}
+
+export interface NFTRaffleData {
+  tickets: number;
+  end: number;
+  wl: number;
+  price: number;
+  payType: string;
+  myTickets: Array<{ index: number }>;
+  maxTickets: number;
+  winnerCnt: number;
+  winners: Array<{
+    address: any;
+    index: number;
+    claimed: number;
+  }>;
+  isRevealed: boolean;
+  isClaimed: boolean;
+  isWinner: boolean;
+  allClaimed: boolean;
+}

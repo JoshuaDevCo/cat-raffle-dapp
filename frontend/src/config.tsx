@@ -15,3 +15,6 @@ export const PREY_TOKEN_MINT = new PublicKey("AW2AKm8v7dGvUssdnAJ9Bbbb74t7JQNPDq
 export const RAFFLE_SIZE = 66544;
 export const DECIMALS = 1000000000;
 export const PREY_DECIMALS = 1000000000;
+
+export const DEFAULT_PAY_TYPE = 'SOL';
+export const TOKEN_PAY_TYPE = '$PREY';

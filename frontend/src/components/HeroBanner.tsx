@@ -6,12 +6,13 @@ export default function HeroBanner(props: any) {
         imageHeight = 240,
         fit = "contain",
         src = "/img/hero-banner.png",
-        href = "/"
+        href = "/",
+        sx = {
+            mx: 'auto',
+        },
     } = props;
   return (
-    <Box sx={{
-        mx: 'auto',
-    }}>
+    <Box sx={sx}>
       <Link href={href}>
         <Image src={src} alt="" fit={fit} height={imageHeight}></Image>
       </Link>

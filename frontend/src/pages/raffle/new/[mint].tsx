@@ -1,16 +1,23 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { useRouter } from "next/router";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { getNftMetaData } from "../../../contexts/utils";
+import { useEffect, useState } from "react";
+import {
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+} from "@mui/material";
 import moment from "moment";
-import { FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import { createRaffle } from "../../../contexts/transaction";
 import { errorAlert } from "../../../components/toastGroup";
+import { getNFTdetail } from "../../../services/fetchData";
+import Image from "mui-image";
+import { DEFAULT_PAY_TYPE, TOKEN_PAY_TYPE } from "../../../config";
 
 export default function CreateNewRafflePage(props: {
-  startLoading: Function,
-  closeLoading: Function
+  startLoading: Function;
+  closeLoading: Function;
 }) {
   const { startLoading, closeLoading } = props;
   const router = useRouter();
@@ -25,24 +32,8 @@ export default function CreateNewRafflePage(props: {
 
   const [winnerCount, setWinnerCount] = useState(1);
   const [price, setPrice] = useState();
-  const [maxTickts, setMaxTickts] = useState();
+  const [maxTickets, setMaxTickets] = useState();
   const [endTime, setEndTime] = useState(moment(new Date()).format());
-
-  const getNFTdetail = async () => {
-    startLoading()
-    if (mint !== undefined) {
-      const uri = await getNftMetaData(new PublicKey(mint))
-      await fetch(uri)
-        .then(resp =>
-          resp.json()
-        ).then((json) => {
-          setImage(json.image)
-          setNftName(json.name)
-          setNftDescription(json.description)
-        })
-    }
-    closeLoading();
-  }
 
   const handlePayment = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPaymentMethod((event.target as HTMLInputElement).value);
@@ -59,14 +50,14 @@ export default function CreateNewRafflePage(props: {
       let splPrice;
       if (paymentMethod === "sol") {
         solPrice = price;
-        splPrice = 0
+        splPrice = 0;
       } else if (paymentMethod === "spl") {
         solPrice = 0;
-        splPrice = price
+        splPrice = price;
       }
       if (solPrice === undefined) return;
       if (splPrice === undefined) return;
-      if (maxTickts === undefined) return;
+      if (maxTickets === undefined) return;
       let winnerCnt = 1;
       let white = 0;
       if (rewardType === "nft") {
@@ -81,6 +72,7 @@ export default function CreateNewRafflePage(props: {
       }
 
       try {
+        startLoading();
         await createRaffle(
           wallet,
           new PublicKey(mint),
@@ -90,67 +82,70 @@ export default function CreateNewRafflePage(props: {
           rewardPrice,
           winnerCnt,
           white,
-          maxTickts,
-          () => startLoading(),
-          () => closeLoading(),
-          () => router.push("/raffle")
-        )
+          maxTickets
+        );
+        router.push("/raffle");
       } catch (error) {
-        console.log(error)
+        console.error(error);
+      } finally {
+        closeLoading();
       }
     }
-
-  }
+  };
 
   const checkValidate = () => {
     if (price === 0) {
       errorAlert("Please enter correct price");
-      return false
+      return false;
     }
     const now = new Date();
     const end = new Date(endTime);
     if (now >= end) {
       errorAlert("Please enter correct end date");
-      return false
+      return false;
     }
-    if (rewardType === "whitelist" && (winnerCount === undefined || winnerCount === 0)) {
+    if (
+      rewardType === "whitelist" &&
+      (winnerCount === undefined || winnerCount === 0)
+    ) {
       errorAlert("Please enter the correct number of winners.");
-      return false
+      return false;
     }
-    if (maxTickts === undefined || maxTickts === 0) {
+    if (maxTickets === undefined || maxTickets === 0) {
       errorAlert("Please enter the correct number of max tickets.");
-      return false
+      return false;
     }
     return true;
-  }
+  };
+
+  const updatePage = async () => {
+    try {
+      startLoading();
+      const { image, name, description } = await getNFTdetail({
+        wallet,
+        mint: mint as string,
+      });
+      setImage(image);
+      setNftName(name);
+      setNftDescription(description);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      closeLoading();
+    }
+  };
 
   useEffect(() => {
-    getNFTdetail();
+    updatePage();
     // eslint-disable-next-line
-  }, [wallet.connected])
-
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  useLayoutEffect(() => {
-    if (cardRef.current) {
-      setDimensions({
-        width: cardRef.current.offsetWidth,
-        height: cardRef.current.offsetHeight
-      });
-    }
-  }, []);
+  }, [wallet.connected]);
   return (
     <main>
       <div className="container">
         <div className="create-content">
           <div className="nft-info">
-            <div className="media" ref={cardRef}>
-              {/* eslint-disable-next-line */}
-              <img
-                src={image}
-                style={{ height: dimensions.width }}
-                alt=""
-              />
+            <div className="media">
+              <Image src={image} showLoading alt="" />
             </div>
             <div className="info-item">
               <label>Name: </label>
@@ -168,13 +163,17 @@ export default function CreateNewRafflePage(props: {
                 <div className="form-control">
                   <label>Choose payment method</label>
                   <FormControl>
-                    <RadioGroup
-                      row
-                      onChange={handlePayment}
-                      defaultValue="sol"
-                    >
-                      <FormControlLabel value="sol" control={<Radio />} label="SOL" />
-                      <FormControlLabel value="spl" control={<Radio />} label="$PREY" />
+                    <RadioGroup row onChange={handlePayment} defaultValue="sol">
+                      <FormControlLabel
+                        value="sol"
+                        control={<Radio />}
+                        label="SOL"
+                      />
+                      <FormControlLabel
+                        value="spl"
+                        control={<Radio />}
+                        label="$PREY"
+                      />
                     </RadioGroup>
                   </FormControl>
                 </div>
@@ -189,12 +188,11 @@ export default function CreateNewRafflePage(props: {
                     placeholder="Please enter the NFT price"
                   />
                   <span className="token-name">
-                    {
-                      paymentMethod === "sol" ?
-                        <>SOL</>
-                        :
-                        <>$PREY</>
-                    }
+                    {paymentMethod === "sol" ? (
+                      <>{DEFAULT_PAY_TYPE}</>
+                    ) : (
+                      <>{TOKEN_PAY_TYPE}</>
+                    )}
                   </span>
                 </div>
               </div>
@@ -209,17 +207,28 @@ export default function CreateNewRafflePage(props: {
                       onChange={handleRewardType}
                       defaultValue="nft"
                     >
-                      <FormControlLabel value="nft" control={<Radio />} label="NFT" />
-                      <FormControlLabel value="whitelist" control={<Radio />} label="Whitelist" />
-                      <FormControlLabel value="spl" control={<Radio />} label="PREY" />
+                      <FormControlLabel
+                        value="nft"
+                        control={<Radio />}
+                        label="NFT"
+                      />
+                      <FormControlLabel
+                        value="whitelist"
+                        control={<Radio />}
+                        label="Whitelist"
+                      />
+                      <FormControlLabel
+                        value="spl"
+                        control={<Radio />}
+                        label="PREY"
+                      />
                     </RadioGroup>
                   </FormControl>
                 </div>
               </div>
             </div>
             <div className="row">
-              {
-                rewardType !== "nft" &&
+              {rewardType !== "nft" && (
                 <div className="col-half">
                   <div className="form-control">
                     <label>Winner Count* (Maximum 50)</label>
@@ -231,12 +240,11 @@ export default function CreateNewRafflePage(props: {
                     />
                   </div>
                 </div>
-              }
-              {
-                rewardType === "spl" &&
+              )}
+              {rewardType === "spl" && (
                 <div className="col-half">
                   <div className="form-control">
-                    <label>Reward Price ($PREY)</label>
+                    <label>Reward Price ({TOKEN_PAY_TYPE})</label>
                     <input
                       value={rewardPrice}
                       name="winner-count"
@@ -245,7 +253,7 @@ export default function CreateNewRafflePage(props: {
                     />
                   </div>
                 </div>
-              }
+              )}
             </div>
             <div className="row">
               <div className="col-half">
@@ -264,9 +272,9 @@ export default function CreateNewRafflePage(props: {
                 <div className="form-control">
                   <label>Tickets* (Maximum 2000)</label>
                   <input
-                    value={maxTickts}
+                    value={maxTickets}
                     name="max-tickets"
-                    onChange={(e: any) => setMaxTickts(e.target.value)}
+                    onChange={(e: any) => setMaxTickets(e.target.value)}
                     placeholder="Please enter the max tickets."
                   />
                 </div>
@@ -286,5 +294,5 @@ export default function CreateNewRafflePage(props: {
         </div>
       </div>
     </main>
-  )
+  );
 }

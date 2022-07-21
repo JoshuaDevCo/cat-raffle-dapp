@@ -1,266 +1,168 @@
-import { ClickAwayListener } from '@mui/material';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { useRouter } from 'next/router';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import CopyAddress from '../../components/CopyAddress';
-import Countdown from '../../components/Countdown';
-import { DECIMALS } from '../../config';
+import { ClickAwayListener } from "@mui/material";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
+import Image from "mui-image";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import CopyAddress from "../../components/CopyAddress";
+import Countdown from "../../components/Countdown";
 import {
   buyTicket,
   claimReward,
-  getRaffleState,
   getStateByKey,
   revealWinner,
   withdrawNft,
   closeRaffle,
-} from '../../contexts/transaction';
-import { adminValidation, getNftMetaData } from '../../contexts/utils';
+} from "../../contexts/transaction";
+import { NFTRaffleData } from "../../contexts/type";
+import { adminValidation } from "../../contexts/utils";
+import { getNFTdetail } from "../../services/fetchData";
 
 export default function RaffleItemPage(props: {
   startLoading: Function;
   closeLoading: Function;
 }) {
-  const { startLoading, closeLoading } = props;
-  const router = useRouter();
-  const { raffleKey } = router.query;
-  const [mint, setMint] = useState('');
   const wallet = useWallet();
-  const [image, setImage] = useState('');
-  const [nftName, setNftName] = useState('');
-  const [nftDescription, setNftDescription] = useState('');
-  const [myTickets, setMyTickets] = useState<any>([]);
+  const router = useRouter();
+  const { startLoading, closeLoading } = props;
+  const { raffleKey } = router.query;
+  const [mint, setMint] = useState("");
+  const [image, setImage] = useState("");
+  const [nftName, setNftName] = useState("");
+  const [nftDescription, setNftDescription] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const [count, setCount] = useState(0);
-  const [endTimestamp, setEndtimestamp] = useState(0);
-  const [maxEntrants, setMaxEntrants] = useState(0);
-  const [price, setPrice] = useState(0);
-  const [payType, setPayType] = useState('SOL');
-  const [whitelisted, setWhitelisted] = useState<any>();
-  const [winner, setWinner] = useState<any>();
-  const [winnerCount, setWinnerCount] = useState(0);
-
   const [tickets, setTickets] = useState(1);
-
-  const [allClaimed, setAllClaimed] = useState(false);
-  const [isRevealed, setIsRevealed] = useState(false);
-  const [isWinner, setIsWinner] = useState(false);
-  const [isClaimed, setIsClaimed] = useState(false);
   const [isTicketsView, setIsTicketsView] = useState(false);
+  const [raffleData, setRaffleData] = useState<NFTRaffleData>();
+
+  const updateNFTDetail = async () => {
+    const { image, name, description, raffleData } = await getNFTdetail({
+      wallet,
+      mint,
+      raffleKey,
+    });
+    setRaffleData(raffleData);
+    setImage(image);
+    setNftName(name);
+    setNftDescription(description);
+  }
 
   const getRaffleData = async () => {
-    console.log(raffleKey, 'raffleKey');
+    console.debug(raffleKey, "raffleKey");
     if (raffleKey === undefined) return;
     try {
+      startLoading();
       const raffle = await getStateByKey(new PublicKey(raffleKey));
       if (raffle !== null) {
-        const nftMint = raffle.nftMint.toBase58();
-        setMint(nftMint);
-        getNFTdetail(nftMint);
+        const mint = raffle.nftMint.toBase58();
+        setMint(mint);
+        await updateNFTDetail();
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+    } finally {
+      closeLoading();
     }
-  };
-
-  const getNFTdetail = async (nftMint: string) => {
-    startLoading();
-    if (raffleKey !== undefined) {
-      const uri = await getNftMetaData(new PublicKey(nftMint));
-      await fetch(uri)
-        .then((resp) => resp.json())
-        .then((json) => {
-          setImage(json.image);
-          setNftName(json.name);
-          setNftDescription(json.description);
-        });
-      const raffleData = await getRaffleState(new PublicKey(nftMint));
-      if (raffleData === null) return;
-
-      const tickets = raffleData?.count.toNumber();
-      setCount(tickets);
-      const end = raffleData.endTimestamp.toNumber() * 1000;
-      setEndtimestamp(end);
-      const wl = raffleData.whitelisted.toNumber();
-      setWhitelisted(wl);
-      if (raffleData.ticketPricePrey.toNumber() === 0) {
-        setPrice(raffleData.ticketPriceSol.toNumber() / LAMPORTS_PER_SOL);
-        setPayType('SOL');
-      } else if (raffleData.ticketPriceSol.toNumber() === 0) {
-        setPrice(raffleData.ticketPricePrey.toNumber() / DECIMALS);
-        setPayType('$PREY');
-      }
-      let mine: any = [];
-      for (let i = 0; i < tickets; i++) {
-        if (
-          raffleData.entrants[i].toBase58() === wallet.publicKey?.toBase58()
-        ) {
-          mine.push({
-            index: i + 1,
-          });
-        }
-      }
-      setMyTickets(mine);
-      const maxTickets = raffleData.maxEntrants.toNumber();
-      setMaxEntrants(maxTickets);
-      const winnerCnt = raffleData.winnerCount.toNumber();
-      setWinnerCount(winnerCnt);
-      console.log(tickets, winnerCnt, 'thishtis');
-
-      if (
-        raffleData.winner[0].toBase58() === '11111111111111111111111111111111'
-      ) {
-        setIsRevealed(false);
-      } else {
-        setIsRevealed(true);
-      }
-
-      let winners = [];
-      const resWinners = raffleData.winner;
-      console.log(raffleData, 'raffleData');
-      const claimedWinner = raffleData.claimedWinner;
-      let claimed = 0;
-      for (let i = 0; i < winnerCnt; i++) {
-        winners.push({
-          address: resWinners[i].toBase58(),
-          index: raffleData.indexes[i].toNumber(),
-          claimed: claimedWinner[i].toNumber(),
-        });
-
-        if (
-          resWinners[i].toBase58() === wallet.publicKey?.toBase58() &&
-          claimedWinner[i].toNumber() === 1
-        ) {
-          claimed++;
-          setIsClaimed(true);
-        }
-
-        if (wallet.publicKey !== null) {
-          if (resWinners[i].toBase58() === wallet.publicKey?.toBase58())
-            setIsWinner(true);
-        }
-      }
-      setAllClaimed(
-        winners
-          .map((e: any) => e.claimed)
-          .reduce((a: number, b: number) => a + b) === winnerCnt,
-      );
-      setWinner(winners);
-    }
-    closeLoading();
   };
 
   const handleClose = async () => {
-    if (raffleKey) {
-      try {
-        await closeRaffle(
-          wallet,
-          raffleKey,
-          () => startLoading(),
-          () => closeLoading(),
-          () => router.push('/create-raffle'),
-        );
-      } catch (error) {
-        console.log(error);
-      }
+    if (!raffleKey) {
+      return;
+    }
+    try {
+      startLoading();
+      await closeRaffle(wallet, new PublicKey(raffleKey));
+      router.push("/create-raffle");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      closeLoading();
     }
   };
 
   const handleReClaim = async () => {
-    if (mint !== '') {
-      try {
-        await withdrawNft(
-          wallet,
-          new PublicKey(mint),
-          () => startLoading(),
-          () => closeLoading(),
-          () => router.push('/create-raffle'),
-        );
-      } catch (error) {
-        console.log(error);
-      }
+    if (mint === "") {
+      return;
+    }
+    try {
+      startLoading();
+      await withdrawNft(wallet, new PublicKey(mint));
+      router.push("/create-raffle");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      closeLoading();
     }
   };
 
   const handlePurchase = async () => {
-    if (mint !== '')
-      try {
-        await buyTicket(
-          wallet,
-          new PublicKey(mint),
-          tickets,
-          () => startLoading(),
-          () => closeLoading(),
-          () => getNFTdetail(mint),
-        );
-      } catch (error) {
-        console.log(error);
-      }
+    if (mint === "") {
+      return;
+    }
+    try {
+      startLoading();
+      await buyTicket(wallet, new PublicKey(mint), tickets);
+      await updateNFTDetail();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      closeLoading();
+    }
   };
 
   const handleRevealWinner = async () => {
-    if (raffleKey)
-      try {
-        await revealWinner(
-          wallet,
-          new PublicKey(raffleKey),
-          () => startLoading(),
-          () => closeLoading(),
-          () => getNFTdetail(mint),
-        );
-      } catch (error) {
-        console.log(error);
-      }
+    if (!raffleKey) {
+      return;
+    }
+    try {
+      startLoading();
+      await revealWinner(wallet, new PublicKey(raffleKey));
+      await updateNFTDetail();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      closeLoading();
+    }
   };
 
   const handleClaim = async () => {
-    if (mint !== '')
-      try {
-        await claimReward(
-          wallet,
-          new PublicKey(mint),
-          () => startLoading(),
-          () => closeLoading(),
-          () => getNFTdetail(mint),
-        );
-      } catch (error) {
-        console.log(error);
-      }
+    if (mint === "") {
+      return;
+    }
+    try {
+      startLoading();
+      await claimReward(wallet, new PublicKey(mint));
+      await updateNFTDetail();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      closeLoading();
+    }
   };
 
-  useEffect(() => {
+  const updatePage = async () => {
     if (wallet.publicKey !== null) {
       const admin = adminValidation(wallet);
       setIsAdmin(admin);
     }
-    // eslint-disable-next-line
-  }, [wallet.connected, router]);
+    if (raffleKey !== undefined) {
+      await getRaffleData();
+    }
+  };
 
   useEffect(() => {
-    if (raffleKey !== undefined) getRaffleData();
+    updatePage();
     // eslint-disable-next-line
   }, [wallet.connected, router]);
-
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  useLayoutEffect(() => {
-    if (cardRef.current) {
-      setDimensions({
-        width: cardRef.current.offsetWidth,
-        height: cardRef.current.offsetHeight,
-      });
-    }
-  }, []);
 
   return (
     <main>
       <div className="container">
         <div className="create-content">
           <div className="nft-info">
-            <div className="media" ref={cardRef}>
-              {/* eslint-disable-next-line */}
-              <img src={image} alt="" style={{ height: dimensions.width }} />
+            <div className="media">
+              <Image src={image} showLoading alt="" />
             </div>
             <div className="info-item">
               <label>Name: </label>
@@ -278,7 +180,7 @@ export default function RaffleItemPage(props: {
                 <div className="raffle-info-item">
                   <label>Price</label>
                   <p className="text-1">
-                    {price} {payType}
+                    {raffleData?.price} {raffleData?.payType}
                   </p>
                 </div>
               </div>
@@ -287,15 +189,9 @@ export default function RaffleItemPage(props: {
               <div className="col-half">
                 <div className="raffle-info-item">
                   <label>Sold tickets</label>
-                  {isRevealed ? (
-                    <p className="text-2">
-                      {count} / {maxEntrants}
-                    </p>
-                  ) : (
-                    <p className="text-2">
-                      {count} / {maxEntrants}
-                    </p>
-                  )}
+                  <p className="text-2">
+                    {raffleData?.tickets} / {raffleData?.maxTickets}
+                  </p>
                 </div>
               </div>
               {wallet.publicKey !== null && (
@@ -303,13 +199,13 @@ export default function RaffleItemPage(props: {
                   <div className="raffle-info-item">
                     <label>My tickets</label>
                     <div className="text-2 my-tickets">
-                      <span>{myTickets.length}</span>
-                      {myTickets.length !== 0 && (
+                      <span>{raffleData?.myTickets?.length}</span>
+                      {raffleData?.myTickets?.length !== 0 && (
                         <span
                           className="view-tickets"
                           onClick={() => setIsTicketsView(!isTicketsView)}
                         >
-                          {!isTicketsView ? 'view' : 'close'}
+                          {!isTicketsView ? "view" : "close"}
                         </span>
                       )}
                       {isTicketsView && (
@@ -318,10 +214,12 @@ export default function RaffleItemPage(props: {
                         >
                           <div className="my-tickets-content">
                             <ul>
-                              {myTickets.length !== 0 &&
-                                myTickets.map((item: any, key: number) => (
-                                  <li key={key}>#{item.index}</li>
-                                ))}
+                              {raffleData?.myTickets?.length !== 0 &&
+                                raffleData?.myTickets?.map(
+                                  (item: any, key: number) => (
+                                    <li key={key}>#{item.index}</li>
+                                  )
+                                )}
                             </ul>
                           </div>
                         </ClickAwayListener>
@@ -332,24 +230,24 @@ export default function RaffleItemPage(props: {
               )}
             </div>
             <div className="row m-20">
-              {winnerCount !== 1 && (
+              {raffleData?.winnerCnt !== 1 && (
                 <div className="col-half">
                   <div className="raffle-info-item">
                     <label>Whitelist Spots</label>
-                    <p className="text-2">{winnerCount}</p>
+                    <p className="text-2">{raffleData?.winnerCnt}</p>
                   </div>
                 </div>
               )}
               <div className="col-half">
                 <div className="raffle-info-item">
                   <label>Raffle Ends</label>
-                  {new Date() > new Date(endTimestamp) ? (
+                  {new Date() > new Date(raffleData?.end || 0) ? (
                     <p className="text-2">Closed</p>
                   ) : (
                     <p className="text-2">
                       <Countdown
-                        endDateTime={new Date(endTimestamp)}
-                        update={() => getNFTdetail(mint)}
+                        endDateTime={new Date(raffleData?.end || 0)}
+                        update={updateNFTDetail()}
                       />
                     </p>
                   )}
@@ -360,7 +258,7 @@ export default function RaffleItemPage(props: {
               <p className="wallet-alert">Please connect wallet</p>
             ) : (
               <>
-                {!isAdmin && new Date(endTimestamp) > new Date() && (
+                {!isAdmin && new Date(raffleData?.end || 0) > new Date() && (
                   <div className="row m-20">
                     <div className="col-half">
                       <div className="form-control">
@@ -370,12 +268,16 @@ export default function RaffleItemPage(props: {
                           value={tickets}
                           name="end-time"
                           min={1}
-                          max={maxEntrants - count}
+                          max={
+                            (raffleData?.maxTickets || 0) -
+                            (raffleData?.tickets || 0)
+                          }
                           onChange={(e: any) => setTickets(e.target.value)}
                           placeholder="Please choose end time."
                         />
                         <p>
-                          You have to pay {price * tickets} {payType}.
+                          You have to pay {(raffleData?.price || 0) * tickets}{" "}
+                          {raffleData?.payType}.
                         </p>
                       </div>
                     </div>
@@ -386,10 +288,10 @@ export default function RaffleItemPage(props: {
                     {isAdmin ? (
                       <>
                         {/* Reclaim nft when after endtime && no any tickets count  */}
-                        {new Date(endTimestamp) < new Date() &&
-                        whitelisted !== 3 &&
-                        count === 0 &&
-                        !isRevealed ? (
+                        {new Date(raffleData?.end || 0) < new Date() &&
+                        raffleData?.wl !== 3 &&
+                        raffleData?.tickets === 0 &&
+                        !raffleData?.isRevealed ? (
                           <button
                             className="btn-create-aution"
                             onClick={() => handleReClaim()}
@@ -399,7 +301,7 @@ export default function RaffleItemPage(props: {
                         ) : (
                           <></>
                         )}
-                        {allClaimed && (
+                        {raffleData?.allClaimed && (
                           <button
                             className="btn-create-aution"
                             onClick={() => handleClose()}
@@ -410,7 +312,7 @@ export default function RaffleItemPage(props: {
                       </>
                     ) : // On user side
                     // Before end time
-                    new Date(endTimestamp) > new Date() ? (
+                    new Date(raffleData?.end || 0) > new Date() ? (
                       <button
                         className="btn-create-aution"
                         onClick={() => handlePurchase()}
@@ -419,9 +321,9 @@ export default function RaffleItemPage(props: {
                       </button>
                     ) : // After end time
                     // if is revealed winners
-                    !isRevealed ? (
+                    !raffleData?.isRevealed ? (
                       <>
-                        {count !== 0 && (
+                        {raffleData?.tickets !== 0 && (
                           <>
                             <p className="reveal-alert">
                               You cannot see the winners at this time. You must
@@ -437,7 +339,7 @@ export default function RaffleItemPage(props: {
                         )}
                       </>
                     ) : // else is revealed winners
-                    !isClaimed && isWinner ? (
+                    !raffleData?.isClaimed && raffleData?.isWinner ? (
                       <button
                         className="btn-create-aution"
                         onClick={() => handleClaim()}
@@ -451,33 +353,33 @@ export default function RaffleItemPage(props: {
                 </div>
               </>
             )}
-            {winnerCount !== 0 && isRevealed && (
+            {raffleData?.winnerCnt !== 0 && raffleData?.isRevealed && (
               <div className="row m-10">
                 <div className="col-12">
                   <div className="winner-list">
                     <div className="winner-content">
                       <>
-                        {whitelisted === 0 ? (
+                        {raffleData?.wl === 0 ? (
                           <p className="text-1">Winner List</p>
                         ) : (
                           <></>
                         )}
-                        {whitelisted === 1 ? (
+                        {raffleData?.wl === 1 ? (
                           <p className="text-2">Winner</p>
                         ) : (
                           <></>
                         )}
                       </>
-                      {winner &&
-                        winner.length !== 0 &&
-                        winner.map((item: any, key: number) => (
+                      {raffleData?.winners &&
+                        raffleData?.winners.length !== 0 &&
+                        raffleData?.winners.map((item: any, key: number) => (
                           <div className="winner-item" key={key}>
                             <CopyAddress address={item.address} />
                             <span className="winner-claimed">
                               #&nbsp;{item.index}
                             </span>
                             <span className="winner-claimed">
-                              {item.claimed === 1 ? 'Claimed' : '---'}
+                              {item.claimed === 1 ? "Claimed" : "---"}
                             </span>
                           </div>
                         ))}

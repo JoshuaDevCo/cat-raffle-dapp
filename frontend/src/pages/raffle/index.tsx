@@ -10,11 +10,13 @@ const RafflePage = (props: {
   maxWidth: Breakpoint;
   className: string;
   sx: any;
-  banner: { 
-    imageHeight: number,
-    fit: "contain" | "cover",
-    src: "string",
-    href: "string"
+  banner: {
+    hidden?: boolean;
+    imageHeight?: number;
+    fit: "contain" | "cover";
+    src: "string";
+    href: "string";
+    sx: any;
   };
   items: Array<any>;
 }) => {
@@ -23,13 +25,15 @@ const RafflePage = (props: {
     className,
     sx,
     items,
-    banner = {},
+    banner = {
+      hidden: false,
+    },
     ...otherProps
   } = props;
   return (
     <Box className={className} sx={sx}>
       <Container maxWidth={maxWidth}>
-        <HeroBanner {...banner} {...otherProps} />
+        {banner && !banner.hidden && <HeroBanner {...banner} />}
         <RaffleList items={items} {...otherProps} />
       </Container>
     </Box>
