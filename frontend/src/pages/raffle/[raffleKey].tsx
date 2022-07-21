@@ -294,7 +294,7 @@ export default function RaffleItemPage(props: {
                   {new Date() > new Date(raffleData?.end || 0) ? (
                     <Typography component="p">{t('RAFFLE.DETAILS.CLOSED')}</Typography>
                   ) : (
-                    <Typography component="p">
+                    <Typography component="p" sx={{ fontSize: '1.5rem' }}>
                       <Countdown
                         endDateTime={new Date(raffleData?.end || 0)}
                         update={counterUpdate}
@@ -308,15 +308,16 @@ export default function RaffleItemPage(props: {
                     p: 2,
                     borderWidth: 1,
                     borderStyle: 'solid',
-                    borderColor: 'textColor.primary',
+                    borderColor: '#32cbff55',
                     borderRadius: 2,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    background: '#7e7eff40'
                   }}>{t('WALLET.PLEASE_CONNECT')}</Typography>
                 ) : (
                   <>
                     {!isAdmin && new Date(raffleData?.end || 0) > new Date() && (
                       <Grid item xs={12} md={6}>
-                        <Typography component="h6">{t('RAFFLE.DETAILS.TICKETS_TO_BUY')}</Typography>
+                        <Typography component="h6">{t('RAFFLE.DETAILS.TICKETS_TO_BUY.LABEL')}</Typography>
                         <NumberInput
                           id="tickets-to-buy"
                           name="tickets-to-buy"
@@ -328,7 +329,7 @@ export default function RaffleItemPage(props: {
                             (raffleData?.tickets || 0)
                           }
 
-                          placeholder={t("Please enter the number of tickets to be purchased.")}
+                          placeholder={t("RAFFLE.DETAILS.TICKETS_TO_BUY.PLACEHOLDER")}
                           onChange={(value: any) => setTickets(value)}
                         />
                         <Typography component="p" sx={{py: 1}}>

@@ -20,7 +20,10 @@
         "WHITELIST_SPOTS": "Whitelist Spots",
         "RAFFLE_ENDS": "Raffle Ends",
         "CLOSED": "Closed",
-        "TICKETS_TO_BUY": "Tickets to buy*",
+        "TICKETS_TO_BUY": {
+          "LABEL": "Tickets to buy*",
+          "PLACEHOLDER": "Please enter the number of tickets to be purchased."
+        },
         "YOU_HAVE_TO_PAY": "You have to pay ",
         "PURCHASE_TICKET": "Purchase ticket",
         "ADMIN": {

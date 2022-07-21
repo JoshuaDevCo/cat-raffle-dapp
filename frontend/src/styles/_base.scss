@@ -18,39 +18,6 @@ body {
     font-size: 18px;
   }
 }
-.text-bold {
-  font-weight: bold;
-}
-
-.text-1 {
-  font-size: 36px;
-  @media (max-width: 992px) {
-    font-size: 32px;
-  }
-  @media (max-width: 762px) {
-    font-size: 28px;
-  }
-  @media (max-width: 762px) {
-    font-size: 24px;
-  }
-}
-
-.text-2 {
-  font-size: 28px;
-  @media (max-width: 992px) {
-    font-size: 32px;
-  }
-  @media (max-width: 762px) {
-    font-size: 28px;
-  }
-  @media (max-width: 762px) {
-    font-size: 24px;
-  }
-}
-
-.m-20 {
-  margin: 20px 0;
-}
 
 .page-loading {
   display: flex;
@@ -84,9 +51,6 @@ a.active {
 }
 .dashboard-container {
     min-height: calc(100vh - $header-height);
-}
-button {
-  cursor: pointer;
 }
 .number {
   font-family: $font-second;
@@ -134,11 +98,6 @@ button {
     margin-left: 0;
   }
 }
-.col-3 {
-  width: calc(25% - 30px);
-  margin-right: 15px;
-  margin-left: 15px;
-}
 .mt-10 {
   margin-top: 10px;
 }
@@ -146,36 +105,6 @@ button {
   padding-bottom: 80px;
 }
 
-.btn {
-  text-transform: capitalize;
-  font-size: 18px;
-  font-weight: bold;
-  background-color: transparent;
-  position: relative;
-  border: none;
-  z-index: 3;
-  outline: none;
-  span {
-    border-radius: 12px;
-    border: 3px solid #000;
-    padding: 5px 20px;
-    position: relative;
-    z-index: 2;
-    background-color: #fff;
-  }
-  &::after {
-    content: "";
-    position: absolute;
-    width: calc(100% - 8px);
-    height: 30px;
-    right: -6px;
-    top: -1;
-    background-color: #696969;
-    border-radius: 14px;
-    border: 3px solid #000;
-    z-index: 1;
-  }
-}
 .main-content {
   @media (max-width: 762px) {
     padding: 0;
@@ -340,17 +269,6 @@ button {
     height: 60px;
   }
 }
-.card-action {
-  text-align: center;
-  margin-top: 20px;
-}
-.btn-view {
-  margin-left: auto;
-  margin-right: auto;
-  img {
-    height: 60px;
-  }
-}
 .create-list {
   display: flex;
   flex-wrap: wrap;
@@ -434,28 +352,11 @@ button {
     font-size: 20px;
   }
 }
-.raffle-endtime {
-  span {
-    font-size: 20px;
-  }
-}
-.MuiOutlinedInput-notchedOutline {
-  border-color: #fff3 !important;
-}
 .MuiSelect-select {
-  color: #fff !important;
   font-family: $font-second !important;
-}
-.MuiSelect-icon {
-  color: #fff3 !important;
 }
 .MuiTouchRipple-root {
   font-family: $font-second !important;
-}
-.MuiRadio-root {
-  .MuiSvgIcon-root {
-    fill: #fff !important;
-  }
 }
 .MuiTypography-root {
   font-family: $font-main !important;
@@ -540,71 +441,7 @@ button {
     }
   }
 }
-.btn-create-aution {
-  width: 240px;
-  height: 50px;
-  font-size: 24px;
-  text-transform: uppercase;
-  color: #fff;
-  background: $primary-color;
-  /* border: 2px solid #fff; */
-  border-radius: 8px;
-  transition: all 0.3s;
-  &:hover {
-    background: #444;
-  }
-  &:disabled {
-    background-color: #292929;
-    cursor: no-drop;
-    &:hover {
-      background-color: #292929;
-    }
-  }
-}
-p.wallet-alert {
-  color: #fff;
-  padding: 20px;
-  margin: 20px;
-  border: 1px solid #32cbff55;
-  border-radius: 4px;
-  text-align: center;
-  background: #7e7eff40;
-}
-p.reveal-alert {
-  color: #fff;
-  padding: 20px;
-  margin-bottom: 20px;
-  border: 1px solid #f1d556;
-  background: #f1d55636;
-  border-radius: 4px;
-}
-.raffle-info-item {
-  color: #fff;
-  label {
-  }
-}
 
-.winner-list {
-  margin-top: 40px;
-  p {
-    color: #fff;
-  }
-  .winner-content {
-    display: flex;
-    flex-direction: column;
-    .winner-item {
-      color: #fff;
-      padding: 10px 0;
-      display: flex;
-      justify-content: space-between;
-      .winner-claimed {
-        width: 70px;
-        margin-left: 10px;
-        text-align: center;
-      }
-    }
-  }
-}
 
 .btn-main {
   width: 100%;
@@ -619,13 +456,6 @@ p.reveal-alert {
   }
 }
 
-.winner-address {
-  position: relative;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  margin: 5px 0;
-}
 .copy-icon {
   display: flex;
   align-items: center;
@@ -634,34 +464,5 @@ p.reveal-alert {
   .copied {
     color: $primary-color;
     font-weight: bold;
-  }
-}
-
-.my-tickets {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  span.view-tickets {
-    font-size: 18px;
-    font-weight: bold;
-    color: $primary-color;
-    cursor: pointer;
-  }
-  .my-tickets-content {
-    position: absolute;
-    background-color: #333;
-    padding: 20px;
-    border-radius: 12px;
-    width: 70px;
-    right: 0;
-    top: 40px;
-    ul {
-      list-style: square;
-      margin-left: 20px;
-      li {
-        font-size: 18px;
-      }
-    }
   }
 }
