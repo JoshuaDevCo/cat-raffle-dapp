@@ -1,12 +1,13 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import { DECIMALS, DEFAULT_PAY_TYPE, TOKEN_PAY_TYPE } from "../config";
+import { DECIMALS, DEFAULT_PAY_TYPE, TOKEN_BUYING_HREF, TOKEN_PAY_TYPE } from "../config";
 import { getNftMetaData } from "../contexts/utils";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import Countdown from "./Countdown";
 import Image from "mui-image";
 import { Loading } from "./Loading";
+import { Box, Card, CardContent, CardMedia, Grid, Typography } from "@mui/material";
+import Countdown from "./Countdown";
 
 export default function RaffleCard(props: {
   ticketPricePrey: number;
@@ -16,6 +17,7 @@ export default function RaffleCard(props: {
   nftMint: string;
   raffleKey: string;
   maxEntrants: number;
+  pipe: any,
 }) {
   const {
     ticketPricePrey,
@@ -25,6 +27,7 @@ export default function RaffleCard(props: {
     endTimestamp,
     nftMint,
     ticketsCount,
+    pipe
   } = props;
   const router = useRouter();
   const [image, setImage] = useState("");
@@ -32,6 +35,7 @@ export default function RaffleCard(props: {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [payType, setPayType] = useState("--");
+  const { t } = pipe;
 
   const getNFTdetail = async () => {
     try {
@@ -59,64 +63,111 @@ export default function RaffleCard(props: {
   }, []);
 
   return (
-    <div
+    <Grid item xs={12} md={6} lg={4} xl={3}>
+      <Card sx={{
+        borderRadius: 12,
+        backgroundColor: 'background.primary',
+        cursor: 'pointer',
+      }}
       className="raffle-card"
-      onClick={() => router.push("/raffle/" + raffleKey)}
-    >
-      <div className="media">
-        <Image src={image} alt="" showLoading={<Loading/>}
-          style={{
-            filter:
-              endTimestamp < new Date().getTime() ? "grayscale(1)" : "none",
-          }}></Image>
-      </div>
-      <div className="card-content">
-        <div className="top-content">
-          <h3 className="card-title title-1">{name}</h3>
-          <p className="card-price">
-            {price} {payType}
-          </p>
-          {/* <p className="card-total-item">Total item: <span>250</span></p> */}
-          <div className="card-countdown">
+      onClick={() => router.push("/raffle/" + raffleKey)}>
+        <CardMedia>
+          <Image src={image} alt="" showLoading={<Loading/>}
+            style={{
+              filter:
+                endTimestamp < new Date().getTime() ? "grayscale(1)" : "none",
+            }}>
+          </Image>
+        </CardMedia>
+        <CardContent sx={{
+          p: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between'
+        }} className="card-content">
+          <Box>
+            <Typography component="h3" sx={{ fontSize: '1.5rem' }}>{name}</Typography>
+          </Box>
+          <Box>
+            <Typography component="p" sx={{
+              py: 1,
+              fontSize: '1rem',
+              borderWidth: 2,
+              borderStyle: 'solid',
+              borderColor: 'text.primary',
+              textAlign: 'center',
+              borderRadius: 8,
+              fontWeight: 700,
+              my: 1,
+            }}>{price} {payType}</Typography>
+          </Box>
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            my: 1,
+          }}>
             {endTimestamp > new Date().getTime() ? (
               <>
-                <p>End in:</p>
+                <Typography component="p" sx={{ fontWeight: 700 }}>{t('RAFFLE.DETAILS.END_IN')}</Typography>
                 <Countdown
                   endDateTime={endTimestamp}
                   update={() => getNFTdetail()}
                 />
               </>
             ) : (
-              <>Closed</>
+              <>{t('RAFFLE.DETAILS.CLOSED')}</>
             )}
-          </div>
-          <p className="card-total-item">
-            {ticketsCount}/{maxEntrants} Filled
-          </p>
-          <p className="card-description">
-            {description.slice(0, 120)}
-            {description.length > 120 && "..."}
-            {description.length > 120 && (
-              <span>
-                <Link href={"/raffle/" + raffleKey}>
-                  <a>Read more</a>
-                </Link>
-              </span>
-            )}
-          </p>
-        </div>
-        <div className="bottom-content">
-          <p>
-            not enough prey, hunt some
-            <span>
-              <Link href="https://">
-                <a>here</a>
-              </Link>
-            </span>
-            .
-          </p>
-        </div>
-      </div>
-    </div>
+          </Box>
+          <Box sx={{
+            fontSize: '1rem',
+            textAlign: 'end',
+            fontWeight: 600,
+          }}>
+            <Typography component="span" sx={{
+              fontSize: '1.25rem',
+              fontWeight: 700,
+            }}>{ticketsCount} / {maxEntrants} {t('RAFFLE.DETAILS.FILLED')}</Typography>
+          </Box>
+          <Box>
+            <Typography component="p" sx={{
+              fontSize: '0.875rem',
+              fontWeight: 'bold',
+              lineHeight: 1.5,
+              color: '#777',
+              minHeight: 115
+            }}>
+              {description.slice(0, 120)}
+              {description.length > 10 && "..."}
+              {description.length > 10 && (
+                <Typography component="a" sx={{
+                  textTransform: 'uppercase',
+                  color: 'text.secondary',
+                  ml: 1,
+                  textDecoration: 'none',
+                  href: "/raffle/" + raffleKey
+                }}>{t('RAFFLE.DETAILS.READ_MORE')}</Typography>
+              )}
+            </Typography>
+          </Box>
+          <Box sx={{
+            mt: 2,
+          }}>
+            <Typography component="p" sx={{
+              textTransform: 'uppercase',
+              fontWeight: 700,
+              fontSize: '0.875rem'
+            }}>
+              {t('RAFFLE.DETAILS.NOT_ENOUGH_TOKEN')}
+              <Typography component="a" href={TOKEN_BUYING_HREF} sx={{
+                textDecoration: 'none',
+                ml: 1,
+              }}>{t('RAFFLE.DETAILS.HERE')}</Typography>
+            </Typography>
+          </Box>
+        </CardContent>
+        
+      </Card>
+    </Grid>
   );
 }

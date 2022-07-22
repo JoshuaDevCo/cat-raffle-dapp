@@ -37,7 +37,12 @@
         "WINNER_LIST": "Winner List",
         "WINNER": "Winner",
         "CLAIMED": "Claimed",
-        "NOT_YET_CLAIMED": "---"
+        "NOT_YET_CLAIMED": "---",
+        "END_IN": "End in: ",
+        "FILLED": "Filled",
+        "READ_MORE": "Read more",
+        "NOT_ENOUGH_TOKEN": "Not enough prey, hunt some",
+        "HERE": "here"
       }
     },
     "WALLET": {

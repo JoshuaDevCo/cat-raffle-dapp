@@ -21,4 +21,6 @@ export const TOKEN_PAY_TYPE = '$PREY';
 
 export const FLOATING_PTS_FIXED_DECIMAL = 2;
 
+export const TOKEN_BUYING_HREF = 'https://'
+
 export const DEBUG = 1;

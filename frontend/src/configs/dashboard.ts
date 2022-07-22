@@ -26,11 +26,8 @@ export const dashboard = {
       py: 2,
     },
     maxWidth: 'xl',
-    containerSx: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gridGap: { xs: 16, md: 28 },
-      pb: 5,
+    container: {
+      spacing: 3,
     }
   }
 }
