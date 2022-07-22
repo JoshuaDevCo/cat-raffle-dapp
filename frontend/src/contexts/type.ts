@@ -1,3 +1,4 @@
+import { MetadataKey } from "@nfteyez/sol-rayz/dist/config/metaplex";
 import * as anchor from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 
@@ -47,4 +48,22 @@ export interface NFTRaffleData {
   isClaimed: boolean;
   isWinner: boolean;
   allClaimed: boolean;
+}
+
+export interface NFTType {
+  mint: string;
+  updateAuthority: string;
+  data: {
+    creators: any[];
+    name: string;
+    symbol: string;
+    uri: string;
+    sellerFeeBasisPoints: number;
+  };
+  key: MetadataKey;
+  primarySaleHappened: boolean;
+  isMutable: boolean;
+  editionNonce: number;
+  masterEdition?: string;
+  edition?: string;
 }

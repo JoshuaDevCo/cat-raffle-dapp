@@ -1,8 +1,8 @@
 import { getParsedNftAccountsByOwner } from "@nfteyez/sol-rayz";
-import { MetadataKey } from "@nfteyez/sol-rayz/dist/config/metaplex";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useEffect, useState } from "react";
 import ReadyCard from "../components/ReadyCard";
+import { NFTType } from "../contexts/type";
 import { solConnection } from "../contexts/utils";
 
 export default function CreateRaffle(props: {
@@ -16,14 +16,20 @@ export default function CreateRaffle(props: {
   const [nftList, setNftList] = useState<any>();
 
   const getNFTs = async () => {
-    startLoading(true);
-    if (wallet.publicKey !== null) {
+    if (wallet.publicKey === null) {
+      return;
+    }
+    try {
+      startLoading(true);
       const nftsList = await getParsedNftAccountsByOwner({
         publicAddress: wallet.publicKey.toBase58(),
         connection: solConnection,
       });
       setNftList(nftsList);
       setHide(!hide);
+    } catch (error) {
+      console.error(error);
+    } finally {
       closeLoading(false);
     }
   };
@@ -54,22 +60,4 @@ export default function CreateRaffle(props: {
       </div>
     </main>
   );
-}
-
-interface NFTType {
-  mint: string;
-  updateAuthority: string;
-  data: {
-    creators: any[];
-    name: string;
-    symbol: string;
-    uri: string;
-    sellerFeeBasisPoints: number;
-  };
-  key: MetadataKey;
-  primarySaleHappened: boolean;
-  isMutable: boolean;
-  editionNonce: number;
-  masterEdition?: string;
-  edition?: string;
 }
