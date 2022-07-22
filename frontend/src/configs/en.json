@@ -17,6 +17,8 @@
         "PRICE": "Price: ",
         "SOLD_TICKETS": "Sold Tickets: ",
         "MY_TICKETS": "My Tickets: ",
+        "VIEW": "View",
+        "CLOSE": "Close",
         "WHITELIST_SPOTS": "Whitelist Spots",
         "RAFFLE_ENDS": "Raffle Ends",
         "CLOSED": "Closed",

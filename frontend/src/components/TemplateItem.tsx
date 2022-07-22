@@ -33,7 +33,13 @@ import { Image } from "mui-image";
 import { ColorButton } from "./ColorButton";
 import { ExpandMore } from "./ExpandMore";
 import { HashLoader } from "react-spinners";
+import Countdown from "./Countdown";
+import { NumberInput } from "./NumberInput";
+import { FLOATING_PTS_FIXED_DECIMAL } from "../config";
+import CopyAddress from "./CopyAddress";
+import { MenuButton } from "./MenuButton";
 
+const toFixed = (value: number) => value.toFixed(FLOATING_PTS_FIXED_DECIMAL);
 const getKey = (item: any, index: number) => `${get(item, "type")}#${Math.floor(Math.random()*100)}#${index}`;
 const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
   const { t, theme, colorMode, dataModel, expanded, handleExpandClick, opened } = pipe;
@@ -43,7 +49,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
   if (isFunction(hidden) ? !!hidden(pipe) : !!hidden) {
     return <></>
   }
-  const processFunc = (value: Function | string | number, params = pipe) => isFunction(value) ? value(params) : value;
+  const processFunc = (value: Function | string | number, params = pipe) => isFunction(value) ? value({ ...params, toFixed }) : value;
   const components: any = {
     container: () => (
       <Container key={key} {...otherProps}>
@@ -80,18 +86,18 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       } = otherProps;
       return (
         <Card key={key} {...cardProps}>
-          {src && (
+          {(src || image) && (
             <CardMedia>
               <Image
                 height={imageHeight}
-                src={src || image}
+                src={processFunc(src || image)}
                 alt={alt}
                 showLoading={showLoading && <HashLoader size={32} color="#3c23cd" />} 
                 fit={fit}
               ></Image>
             </CardMedia>
           )}
-          <CardContent>
+          {!subItems ? <CardContent>
             {title && (
               <TemplateItem
                 key={`${key}#item`}
@@ -108,7 +114,10 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
             {description && (
               <TemplateItem key={`${key}#desc#item`} items={description} pipe={pipe}></TemplateItem>
             )}
-          </CardContent>
+          </CardContent> :
+          <CardContent>
+            <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
+          </CardContent>}
           <CardActions>
             <TemplateItem key={`${key}#action#item`} items={buttons} pipe={pipe}></TemplateItem>
             { canExpand && <ExpandMore
@@ -207,6 +216,19 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
           <TemplateItem key={`${key}#item`} items={subItems} pipe={pipe}></TemplateItem>
         </Box>
       );
+    },
+    boxList: () => {
+      const { dataPath, ...boxListProps } = otherProps;
+      console.log(dataPath, get(pipe, dataPath))
+      return (<>
+        {
+          map(get(pipe, dataPath), (item: any, key: number) => 
+            <Box key={key} {...boxListProps}>
+              <TemplateItem items={subItems} pipe={{ ...pipe, item }}></TemplateItem>
+            </Box>
+          )
+        }
+      </>)
     },
     typography: () => {
       const { label, className, ...typoProps } = otherProps;
@@ -321,18 +343,22 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       );
     },
     menu: () => {
-      const { onClose, ...menuProps } = otherProps;
+      const { onClose, open, ...menuProps } = otherProps;
       return (
         <Menu
           key={key}
-          anchorEl={get(pipe, "anchorElNav")}
-          open={Boolean(get(pipe, "anchorElNav"))}
+          anchorEl={get(pipe, 'anchorEl', get(pipe, "anchorElNav"))}
+          open={(!!open && processFunc(open)) || Boolean(get(pipe, 'anchorEl', get(pipe, "anchorElNav")))}
           onClose={(event) => onClose && onClose(event, pipe)}
           {...menuProps}
         >
           <TemplateItem key={`${key}#item`} items={subItems} pipe={pipe}></TemplateItem>
         </Menu>
       );
+    },
+    menuButton: () => {
+      const { label, ...menuBtnProps } = otherProps;
+      return <MenuButton label={t(processFunc(label))} items={subItems} {...menuBtnProps} pipe={pipe}></MenuButton>
     },
     menuItem: () => {
       const { ...menuItemProps } = otherProps;
@@ -342,9 +368,17 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
         </MenuItem>
       );
     },
+    menuItemList: () => {
+      const { dataPath, label, ...menuItemListProps } = otherProps;
+      return <>
+        {map(get(pipe, dataPath), (item: any, key: number) => (
+          <MenuItem key={key} {...menuItemListProps}>{t(processFunc(label, { ...pipe, item }))}</MenuItem>
+        ))}
+      </>
+    },
     image: () => {
       const { src, image, alt = '', showLoading, ...imageProps } = otherProps;
-      return <Image key={key} src={src || (isFunction(image) ? image(pipe) : image)} alt={alt} showLoading={showLoading && <HashLoader size={32} color="#3c23cd" />} {...imageProps} />
+      return <Image key={key} src={processFunc(src || image)} alt={alt} showLoading={showLoading && <HashLoader size={32} color="#3c23cd" />} {...imageProps} />
     },
     wallet: () => (
       <WalletDialogProvider key={key}>
@@ -353,6 +387,33 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
         </WalletMultiButton>
       </WalletDialogProvider>
     ),
+    empty: () => {
+      return <><TemplateItem items={subItems} pipe={pipe}></TemplateItem></>
+    },
+    countdown: () => {
+      const { update, endDateTime, ...countDownProps } = otherProps;
+      return <Typography {...countDownProps}>
+        <Countdown
+          endDateTime={processFunc(endDateTime)}
+          update={() => update(pipe)}
+        />
+      </Typography>
+    },
+    number: () => {
+      const { dataPath, min, max, placeholder, onChange, ...numberProps } = otherProps;
+      return <NumberInput
+        {...numberProps}
+        value={get(pipe, dataPath)}
+        min={processFunc(min)}
+        max={processFunc(max)}
+        placeholder={t(processFunc(placeholder))}
+        onChange={(value: any) => onChange(value, pipe)}
+      />
+    },
+    copyAddress: () => {
+      const { address, ...copyAddrProps } = otherProps;
+      return <CopyAddress address={processFunc(address)} pipe={pipe} {...copyAddrProps}/>
+    }
   };
   const trimmedType = trim(item?.type);
   return isFunction(components[trimmedType]) ? components[trimmedType]() : <></>;
