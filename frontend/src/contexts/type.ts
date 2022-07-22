@@ -67,3 +67,13 @@ export interface NFTType {
   masterEdition?: string;
   edition?: string;
 }
+
+export interface RaffleEntry {
+  ticketPricePrey: number,
+  ticketPriceSol: number,
+  endTimestamp: number,
+  nftMint: string,
+  raffleKey: string,
+  ticketsCount: number,
+  maxEntrants: number,
+}

@@ -7,6 +7,7 @@ import Image from "mui-image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { TFunction } from "react-i18next";
+import { Loading } from "../../components/Loading";
 import { TemplateItem } from "../../components/TemplateItem";
 import { DEBUG, FLOATING_PTS_FIXED_DECIMAL } from "../../config";
 import { raffleDetail } from "../../configs/raffleDetail";
@@ -207,7 +208,7 @@ export default function RaffleItemPage(props: {
           <Grid item xs={template.cardView?.xs} md={template.cardView?.md}>
             <Card sx={template.cardView?.sx}>
               <CardMedia>
-                <Image src={image || ''} showLoading alt="" />
+                <Image src={image || ''} showLoading={<Loading/>} alt="" />
               </CardMedia>
               <CardContent>
                 <TemplateItem items={template.cardView?.items} pipe={{ t }}></TemplateItem>

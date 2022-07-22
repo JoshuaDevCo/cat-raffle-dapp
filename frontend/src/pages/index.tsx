@@ -5,7 +5,7 @@ const Home: NextPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    router.push("/raffle")
+    router.push("/raffle", '/')
     // eslint-disable-next-line
   }, [])
   return (

@@ -19,7 +19,7 @@ export const getNFTdetail = async ({
   }
   const uri = await getNftMetaData(new PublicKey(mint));
   const resp = await fetch(uri);
-  const json: any = resp.json();
+  const json: any = await resp.json();
   result.image = json.image;
   result.name = json.name;
   result.description = json.description;

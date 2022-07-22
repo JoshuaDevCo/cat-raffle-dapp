@@ -1,11 +1,12 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import { DECIMALS } from "../config";
+import { DECIMALS, DEFAULT_PAY_TYPE, TOKEN_PAY_TYPE } from "../config";
 import { getNftMetaData } from "../contexts/utils";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Countdown from "./Countdown";
-import { Skeleton } from "@mui/material";
+import Image from "mui-image";
+import { Loading } from "./Loading";
 
 export default function RaffleCard(props: {
   ticketPricePrey: number;
@@ -31,61 +32,43 @@ export default function RaffleCard(props: {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [payType, setPayType] = useState("--");
-  const [loading, setLoading] = useState(false);
 
   const getNFTdetail = async () => {
-    setLoading(true);
-    const uri = await getNftMetaData(new PublicKey(nftMint));
-    await fetch(uri)
-      .then((resp) => resp.json())
-      .then((json) => {
-        setImage(json.image);
-        setName(json.name);
-        setDescription(json.description);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    if (ticketPricePrey === 0) {
-      setPrice(ticketPriceSol / LAMPORTS_PER_SOL);
-      setPayType("SOL");
-    } else if (ticketPriceSol === 0) {
-      setPrice(ticketPricePrey / DECIMALS);
-      setPayType("$PREY");
+    try {
+      const uri = await getNftMetaData(new PublicKey(nftMint));
+      const resp = await fetch(uri);
+      const { image, name, description } = await resp.json();
+      setImage(image);
+      setName(name);
+      setDescription(description);
+      if (ticketPricePrey === 0) {
+        setPrice(ticketPriceSol / LAMPORTS_PER_SOL);
+        setPayType(DEFAULT_PAY_TYPE);
+      } else if (ticketPriceSol === 0) {
+        setPrice(ticketPricePrey / DECIMALS);
+        setPayType(TOKEN_PAY_TYPE);
+      }
+    } catch (error) {
+      console.error(error)
     }
-
-    setLoading(false);
+    
   };
   useEffect(() => {
     getNFTdetail();
     // eslint-disable-next-line
   }, []);
 
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-  useLayoutEffect(() => {
-    if (cardRef.current) {
-      setDimensions({
-        width: cardRef.current.offsetWidth,
-        height: cardRef.current.offsetHeight,
-      });
-    }
-  }, []);
   return (
     <div
       className="raffle-card"
       onClick={() => router.push("/raffle/" + raffleKey)}
     >
-      <div className="media" ref={cardRef}>
-        <img
-          src={image}
-          alt=""
+      <div className="media">
+        <Image src={image} alt="" showLoading={<Loading/>}
           style={{
             filter:
               endTimestamp < new Date().getTime() ? "grayscale(1)" : "none",
-          }}
-        />
+          }}></Image>
       </div>
       <div className="card-content">
         <div className="top-content">

@@ -1,27 +1,32 @@
+import { Box, Breakpoint, Container } from "@mui/material";
+import { each } from "lodash";
 import { useEffect, useState } from "react";
+import { dashboard } from "../configs/dashboard";
 import { getRaffleGlobalState } from "../contexts/transaction";
+import { RaffleEntry } from "../contexts/type";
 import RaffleCard from "./RaffleCard";
 
 export default function RaffleList(props: any) {
   const [tab, setTab] = useState("live");
   const [liveRaffleList, setLiveRaffleList] = useState<any>();
   const [endRaffleList, setEndRaffleList] = useState<any>();
-
+  const { startLoading, closeLoading, t, theme } = props;
   const getRaffleList = async () => {
-    const res = await getRaffleGlobalState();
-    if (res !== undefined && res !== null && res?.length !== 0) {
-      let liveList = [];
-      let endList = [];
-      for (let nft of res) {
-        if (nft !== null) {
-          const ticketPricePrey = nft.ticketPricePrey.toNumber();
-          const ticketPriceSol = nft.ticketPriceSol.toNumber();
-          const endTimestamp = nft.endTimestamp.toNumber() * 1000;
-          const nftMint = nft.nftMint.toBase58();
-          const count = nft.count.toNumber();
-          const maxEntrants = nft.maxEntrants.toNumber();
-          if (new Date(nft.endTimestamp.toNumber() * 1000) > new Date()) {
-            liveList.push({
+    try {
+      startLoading();
+      const res = await getRaffleGlobalState();
+      if (res !== undefined && res !== null && res?.length !== 0) {
+        const liveList: Array<RaffleEntry> = [];
+        const endList: Array<RaffleEntry> = [];
+        each(res, (nft) => {
+          if (nft !== null) {
+            const ticketPricePrey = nft.ticketPricePrey.toNumber();
+            const ticketPriceSol = nft.ticketPriceSol.toNumber();
+            const endTimestamp = nft.endTimestamp.toNumber() * 1000;
+            const nftMint = nft.nftMint.toBase58();
+            const count = nft.count.toNumber();
+            const maxEntrants = nft.maxEntrants.toNumber();
+            const entry = {
               ticketPricePrey: ticketPricePrey,
               ticketPriceSol: ticketPriceSol,
               endTimestamp: endTimestamp,
@@ -29,44 +34,36 @@ export default function RaffleList(props: any) {
               raffleKey: nft.raffleKey,
               ticketsCount: count,
               maxEntrants: maxEntrants,
-            });
-          } else {
-            endList.push({
-              ticketPricePrey: ticketPricePrey,
-              ticketPriceSol: ticketPriceSol,
-              endTimestamp: endTimestamp,
-              raffleKey: nft.raffleKey,
-              nftMint: nftMint,
-              ticketsCount: count,
-              maxEntrants: maxEntrants,
-            });
+            }
+            if (new Date(endTimestamp) > new Date()) {
+              liveList.push(entry);
+            } else {
+              endList.push(entry);
+            }
           }
-        }
+        }) 
+        liveList.sort((a, b) => b.endTimestamp - a.endTimestamp);
+        endList.sort((a, b) => b.endTimestamp - a.endTimestamp);
+        setLiveRaffleList(liveList);
+        setEndRaffleList(endList);
       }
-      liveList.sort((a, b) => b.endTimestamp - a.endTimestamp);
-      endList.sort((a, b) => b.endTimestamp - a.endTimestamp);
-      setLiveRaffleList(liveList);
-      setEndRaffleList(endList);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      closeLoading();
     }
+    
   };
 
   useEffect(() => {
     getRaffleList();
     // eslint-disable-next-line
   }, []);
-
+  const template = dashboard.raffleList;
   return (
-    <div className="container pb-80">
-      <div className="main-content">
-        {/* <div className="page-tabs">
-                    <button className="btn-image btn-tab" style={{ marginRight: 20 }} onClick={() => setTab("live")}>
-                        live
-                    </button>
-                    <button className="btn-image btn-tab" onClick={() => setTab("ended")}>
-                        all
-                    </button>
-                </div> */}
-        <div className="raffle-list">
+    <Box sx={template.sx}>
+      <Container maxWidth={template.maxWidth as Breakpoint}>
+        <Box sx={template.containerSx}>
           {liveRaffleList !== undefined &&
             liveRaffleList.length !== 0 &&
             liveRaffleList.map(
@@ -101,8 +98,8 @@ export default function RaffleList(props: any) {
                   />
                 )
             )}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Container>
+    </Box>
   );
 }

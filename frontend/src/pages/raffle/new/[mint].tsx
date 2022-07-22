@@ -14,6 +14,7 @@ import { errorAlert } from "../../../components/toastGroup";
 import { getNFTdetail } from "../../../services/fetchData";
 import Image from "mui-image";
 import { DEFAULT_PAY_TYPE, TOKEN_PAY_TYPE } from "../../../config";
+import { Loading } from "../../../components/Loading";
 
 export default function CreateNewRafflePage(props: {
   startLoading: Function;
@@ -145,7 +146,7 @@ export default function CreateNewRafflePage(props: {
         <div className="create-content">
           <div className="nft-info">
             <div className="media">
-              <Image src={image} showLoading alt="" />
+              <Image src={image} showLoading={<Loading/>} alt="" />
             </div>
             <div className="info-item">
               <label>Name: </label>

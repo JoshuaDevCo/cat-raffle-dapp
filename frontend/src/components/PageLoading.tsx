@@ -1,4 +1,5 @@
 import HashLoader from "react-spinners/HashLoader";
+import { Loading } from "./Loading";
 
 export default function PageLoading(props: { loading?: boolean }) {
   return (
@@ -6,7 +7,7 @@ export default function PageLoading(props: { loading?: boolean }) {
       {props.loading && (
         <div className="page-loading">
           <div className="loading-box">
-            <HashLoader size={32} color="#3c23cd" />
+            <Loading/>
           </div>
         </div>
       )}

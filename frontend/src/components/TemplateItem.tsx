@@ -38,6 +38,7 @@ import { NumberInput } from "./NumberInput";
 import { FLOATING_PTS_FIXED_DECIMAL } from "../config";
 import CopyAddress from "./CopyAddress";
 import { MenuButton } from "./MenuButton";
+import { Loading } from "./Loading";
 
 const toFixed = (value: number) => value.toFixed(FLOATING_PTS_FIXED_DECIMAL);
 const getKey = (item: any, index: number) => `${get(item, "type")}#${Math.floor(Math.random()*100)}#${index}`;
@@ -92,7 +93,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
                 height={imageHeight}
                 src={processFunc(src || image)}
                 alt={alt}
-                showLoading={showLoading && <HashLoader size={32} color="#3c23cd" />} 
+                showLoading={showLoading && <Loading/>} 
                 fit={fit}
               ></Image>
             </CardMedia>
@@ -378,7 +379,8 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
     },
     image: () => {
       const { src, image, alt = '', showLoading, ...imageProps } = otherProps;
-      return <Image key={key} src={processFunc(src || image)} alt={alt} showLoading={showLoading && <HashLoader size={32} color="#3c23cd" />} {...imageProps} />
+      return <Image key={key} src={processFunc(src || image)} alt={alt} 
+        showLoading={showLoading && <Loading/>} {...imageProps} />
     },
     wallet: () => (
       <WalletDialogProvider key={key}>

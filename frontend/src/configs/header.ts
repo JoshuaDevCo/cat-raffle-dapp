@@ -115,7 +115,7 @@ export const header = {
               },
               className: ({ routerName, theme }: any) =>
                 routerName === "raffle" ? `active ${theme.palette.mode}` : `${theme.palette.mode}`,
-              href: "/raffle",
+              href: "/",
             }],
           }]
         },
@@ -191,7 +191,7 @@ export const header = {
               },
               className: ({ routerName, theme }: any) =>
                 routerName === "raffle" ? `active ${theme.palette.mode}` : "",
-              href: "/raffle",
+              href: "/",
             },
           ],
         },
