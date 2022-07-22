@@ -83,10 +83,13 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
         fit = "cover",
         canExpand,
         expandItems,
+        imageStyle,
+        contentSx,
+        onClick,
         ...cardProps
       } = otherProps;
       return (
-        <Card key={key} {...cardProps}>
+        <Card key={key} onClick={(event) => onClick && onClick(event, pipe)} {...cardProps}>
           {(src || image) && (
             <CardMedia>
               <Image
@@ -95,10 +98,11 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
                 alt={alt}
                 showLoading={showLoading && <Loading/>} 
                 fit={fit}
+                style={imageStyle}
               ></Image>
             </CardMedia>
           )}
-          {!subItems ? <CardContent>
+          {!subItems ? <CardContent sx={contentSx}>
             {title && (
               <TemplateItem
                 key={`${key}#item`}
@@ -236,6 +240,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       return (
         <Typography key={key} className={processFunc(className)}  {...typoProps}>
           {t(processFunc(label))}
+          { subItems && <TemplateItem items={subItems} pipe={pipe}></TemplateItem>}
         </Typography>
       );
     },
