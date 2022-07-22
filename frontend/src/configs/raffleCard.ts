@@ -142,10 +142,9 @@ export const raffleCard = ({
                 fontWeight: "bold",
                 lineHeight: 1.5,
                 color: "#777",
-                minHeight: 115,
               },
               label: `${description.slice(0, 120)} ${
-                description.length > 120 && "..."
+                description.length > 120 ? "..." : ""
               }`,
               items: [
                 {
