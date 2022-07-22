@@ -29,7 +29,7 @@ export default function RaffleItemPage(props: {
 }) {
   const wallet = useWallet();
   const router = useRouter();
-  const { startLoading, closeLoading, t, maxWidth, sx } = props;
+  const { startLoading, closeLoading, t } = props;
   const { raffleKey } = router.query;
   const [mint, setMint] = useState("");
   const [image, setImage] = useState("");
