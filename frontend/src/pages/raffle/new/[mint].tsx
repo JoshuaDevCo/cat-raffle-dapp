@@ -3,10 +3,17 @@ import { PublicKey } from "@solana/web3.js";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
+  Box,
+  Card,
+  CardContent,
+  CardMedia,
+  Container,
   FormControl,
   FormControlLabel,
+  Grid,
   Radio,
   RadioGroup,
+  Typography,
 } from "@mui/material";
 import moment from "moment";
 import { createRaffle } from "../../../contexts/transaction";
@@ -15,12 +22,15 @@ import { getNFTdetail } from "../../../services/fetchData";
 import Image from "mui-image";
 import { DEFAULT_PAY_TYPE, TOKEN_PAY_TYPE } from "../../../config";
 import { Loading } from "../../../components/Loading";
+import { TFunction } from "react-i18next";
+import { NumberInput } from "../../../components/NumberInput";
 
 export default function CreateNewRafflePage(props: {
   startLoading: Function;
   closeLoading: Function;
+  t: TFunction
 }) {
-  const { startLoading, closeLoading } = props;
+  const { startLoading, closeLoading, t } = props;
   const router = useRouter();
   const wallet = useWallet();
   const { mint } = router.query;
@@ -32,7 +42,7 @@ export default function CreateNewRafflePage(props: {
   const [rewardType, setRewardType] = useState("nft");
 
   const [winnerCount, setWinnerCount] = useState(1);
-  const [price, setPrice] = useState();
+  const [price, setPrice] = useState<number|undefined>(0);
   const [maxTickets, setMaxTickets] = useState();
   const [endTime, setEndTime] = useState(moment(new Date()).format());
 
@@ -141,67 +151,82 @@ export default function CreateNewRafflePage(props: {
     // eslint-disable-next-line
   }, [wallet.connected]);
   return (
-    <main>
-      <div className="container">
-        <div className="create-content">
-          <div className="nft-info">
-            <div className="media">
-              <Image src={image} showLoading={<Loading/>} alt="" />
-            </div>
-            <div className="info-item">
-              <label>Name: </label>
-              <h2>{nftName}</h2>
-            </div>
-            <div className="info-item">
-              <label>Description: </label>
-              <p className="description">{nftDescription}</p>
-            </div>
-          </div>
-
-          <div className="create-panel">
-            <div className="row">
-              <div className="col-half">
-                <div className="form-control">
-                  <label>Choose payment method</label>
-                  <FormControl>
-                    <RadioGroup row onChange={handlePayment} defaultValue="sol">
-                      <FormControlLabel
-                        value="sol"
-                        control={<Radio />}
-                        label="SOL"
-                      />
-                      <FormControlLabel
-                        value="spl"
-                        control={<Radio />}
-                        label="$PREY"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                </div>
-              </div>
-              <div className="col-half">
-                <div className="form-control">
-                  <label>Price*</label>
-                  <input
-                    value={price}
-                    name="price"
-                    onChange={(e: any) => setPrice(e.target.value)}
-                    placeholder="Please enter the NFT price"
-                  />
-                  <span className="token-name">
+    <Box sx={{
+      minHeight: 'calc(100vh - 80px)',
+      p: 4,
+      backgroundColor: "background.default",
+      color: "text.primary",
+    }}>
+      <Container maxWidth='xl'>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6} lg={4} xl={3}>
+            <Card>
+              <CardMedia>
+                <Image src={image} showLoading={<Loading/>} alt="" />
+              </CardMedia>
+              <CardContent>
+                <Box>
+                  <Typography component="h5" sx={{
+                    fontSize: "1rem",
+                    fontWeight: 700,
+                  }}>{t("RAFFLE.DETAILS.NAME")}</Typography>
+                  <Typography component="p" sx={{
+                    ml: 2,
+                  }}>{nftName}</Typography>
+                </Box>
+                <Box>
+                  <Typography component="h5" sx={{
+                    fontSize: "1rem",
+                    fontWeight: 700,
+                  }}>{t("RAFFLE.DETAILS.DESC")}</Typography>
+                  <Typography component="p" sx={{
+                    ml: 2,
+                  }}>{nftDescription}</Typography>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={6} lg={8} xl={9}>
+            <Typography>{t('RAFFLE.ADMIN.CHOOSE_PAYMENT_METHOD')}</Typography>
+            <FormControl>
+              <RadioGroup row onChange={handlePayment} defaultValue="sol">
+                <FormControlLabel
+                  value="sol"
+                  control={<Radio />}
+                  label={DEFAULT_PAY_TYPE}
+                />
+                <FormControlLabel
+                  value="spl"
+                  control={<Radio />}
+                  label={TOKEN_PAY_TYPE}
+                />
+              </RadioGroup>
+            </FormControl>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6} sx={{
+                my: 2
+              }}>
+                <Typography>{t('RAFFLE.ADMIN.PRICE')}</Typography>
+                <Box sx={{
+                  display: 'flex',
+                }}>
+                  <NumberInput className="number-control" name="price" value={price} onChange={(value?: number) => setPrice(value)} placeholder={t('RAFFLE.ADMIN.PRICE_PLACEHOLDER')}></NumberInput>
+                  <Typography component="span">
                     {paymentMethod === "sol" ? (
                       <>{DEFAULT_PAY_TYPE}</>
                     ) : (
                       <>{TOKEN_PAY_TYPE}</>
                     )}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-half">
-                <div className="form-control">
-                  <label>Choose reward type</label>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6} sx={{
+                my: 2
+              }}>
+                <Typography>{t('RAFFLE.ADMIN.CHOOSE_REWARD_TYPE')}</Typography>
+                <Box sx={{
+                  display: 'flex',
+                }}>
                   <FormControl>
                     <RadioGroup
                       row
@@ -221,13 +246,19 @@ export default function CreateNewRafflePage(props: {
                       <FormControlLabel
                         value="spl"
                         control={<Radio />}
-                        label="PREY"
+                        label={TOKEN_PAY_TYPE}
                       />
                     </RadioGroup>
                   </FormControl>
-                </div>
-              </div>
-            </div>
+                </Box>
+              </Grid>
+            </Grid>
+          </Grid>
+    <main>
+      <div className="container">
+        <div className="create-content">
+
+          <div className="create-panel">
             <div className="row">
               {rewardType !== "nft" && (
                 <div className="col-half">
@@ -295,5 +326,8 @@ export default function CreateNewRafflePage(props: {
         </div>
       </div>
     </main>
+        </Grid>
+      </Container>
+    </Box>
   );
 }

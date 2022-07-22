@@ -45,7 +45,11 @@
         "HERE": "here"
       },
       "ADMIN": {
-        "CREATE": "Create Raffle"
+        "CREATE": "Create Raffle",
+        "CHOOSE_PAYMENT_METHOD": "Choose payment method",
+        "PRICE": "Price*",
+        "PRICE_PLACEHOLDER": "Please enter the NFT price",
+        "CHOOSE_REWARD_TYPE": "Choose reward type"
       }
     },
     "WALLET": {

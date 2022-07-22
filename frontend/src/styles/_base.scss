@@ -200,57 +200,29 @@ a.active {
   }
 }
 
-.form-control {
-  display: flex;
-  flex-direction: column;
-  font-family: $font-main;
-  margin-top: 16px;
-  margin-bottom: 16px;
-  position: relative;
-  label {
-    font-size: 18px;
-    color: #fff;
-    margin: 4px 0;
-    @media (max-width: 992px) {
-      font-size: 14px;
-    }
+.number-control {
+  border-radius: 4px;
+  padding: 15px;
+  font-size: '1.25rem';
+  border: 1px solid #fff3;
+  color: #fff;
+  outline: none;
+  font-weight: 400;
+  &:focus {
+    border-color: #63a2ff;
   }
-  input {
-    border-radius: 4px;
-    padding: 15px;
-    font-size: 18px;
-    background-color: transparent;
-    border: 1px solid #fff3;
-    color: #fff;
-    outline: none;
-    font-weight: 400;
-    &:focus {
-      border-color: #63a2ff;
-    }
-    &::placeholder {
-      font-size: 16px;
-    }
+  &::placeholder {
+    font-size: 16px;
   }
-  ::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-  }
-  .error-helper {
-    color: red;
-    position: absolute;
-    bottom: -24px;
-    font-size: 14px;
-  }
-  .token-name {
-    position: absolute;
-    color: #999;
-    bottom: 18px;
-    right: 10px;
-  }
-  p {
-    color: #fff;
-    margin-top: 10px;
-    font-size: 20px;
-  }
+}
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+.error-helper {
+  color: red;
+  position: absolute;
+  bottom: -24px;
+  font-size: 14px;
 }
 .MuiSelect-select {
   font-family: $font-second !important;
