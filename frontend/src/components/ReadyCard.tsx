@@ -1,54 +1,30 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { PublicKey } from "@solana/web3.js";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { getNftMetaData } from "../contexts/utils";
+import Image from "mui-image";
+import { Loading } from "./Loading";
+import { Button, Card, CardActions, CardContent, CardMedia, Grid, Typography } from "@mui/material";
 
-export default function ReadyCard(props: { mint: string }) {
-  const [image, setImage] = useState("");
-  const [name, setName] = useState("");
+export default function ReadyCard(props: { pipe: any, image: string, name: string, mint: string }) {
   const router = useRouter();
-  const getNFTdetail = async () => {
-    const uri = await getNftMetaData(new PublicKey(props.mint));
-    await fetch(uri)
-      .then((resp) => resp.json())
-      .then((json) => {
-        setImage(json.image);
-        setName(json.name);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  const { pipe, image, name, mint } = props;
+  const { t } = pipe;
 
-  useEffect(() => {
-    getNFTdetail();
-    // eslint-disable-next-line
-  }, []);
-
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-  useLayoutEffect(() => {
-    if (cardRef.current) {
-      setDimensions({
-        width: cardRef.current.offsetWidth,
-        height: cardRef.current.offsetHeight,
-      });
-    }
-  }, []);
   return (
-    <div className="ready-card">
-      <div className="card-media" ref={cardRef}>
-        {/* eslint-disable-next-line */}
-        <img src={image} alt="" style={{ height: dimensions.width }} />
-      </div>
-      <p>{name}</p>
-      <button
-        className="btn-primary"
-        onClick={() => router.push(`/raffle/new/${props.mint}`)}
-      >
-        Create Raffle
-      </button>
-    </div>
+    <Grid item xs={12} md={6} lg={4}>
+      <Card>
+        <CardMedia>
+          <Image src={image} alt="" showLoading={<Loading/>}></Image>
+        </CardMedia>
+        <CardContent>
+          <Typography component="p">{name}</Typography>
+        </CardContent>
+        <CardActions>
+          <Button color="primary" variant="contained" 
+            onClick={() => router.push(`/raffle/new/${mint}`)}>
+            {t('RAFFLE.ADMIN.CREATE')}
+          </Button>
+        </CardActions>
+      </Card>
+    </Grid>
   );
 }

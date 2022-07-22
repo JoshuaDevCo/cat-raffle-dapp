@@ -189,7 +189,7 @@ export default function RaffleItemPage(props: {
   const updatePage = async () => {
     if (wallet.publicKey !== null) {
       const admin = adminValidation(wallet);
-      setIsAdmin(admin);
+      setIsAdmin(DEBUG ? true : admin);
     }
     if (raffleKey !== undefined) {
       await getRaffleData();

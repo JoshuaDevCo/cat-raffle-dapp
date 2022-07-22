@@ -43,10 +43,14 @@
         "READ_MORE": "Read more",
         "NOT_ENOUGH_TOKEN": "Not enough prey, hunt some",
         "HERE": "here"
+      },
+      "ADMIN": {
+        "CREATE": "Create Raffle"
       }
     },
     "WALLET": {
-      "PLEASE_CONNECT": "Please connect wallet"
+      "PLEASE_CONNECT": "Please connect wallet",
+      "EMPTY": "No NFTs in this wallet"
     },
     "WARNINGS": {
       "CANNOT_SEE_WINNER": "You cannot see the winners at this time. You must pay a transaction fee to see the winner."

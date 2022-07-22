@@ -5,6 +5,7 @@ import { adminValidation } from "../contexts/utils";
 import { AppBar, Breakpoint, Container, Toolbar } from "@mui/material";
 import { TFunction } from "react-i18next";
 import { TemplateItem } from "./TemplateItem";
+import { DEBUG } from "../config";
 
 export default function Header(props: {
   position?: "fixed" | "absolute" | "sticky" | "static" | "relative";
@@ -37,7 +38,7 @@ export default function Header(props: {
   useEffect(() => {
     if (wallet.publicKey !== null) {
       const admin = adminValidation(wallet);
-      setIsAdmin(admin);
+      setIsAdmin(DEBUG ? true : admin);
       setRouterName(router.pathname.split("/")[1]);
     } else {
       setIsAdmin(false);

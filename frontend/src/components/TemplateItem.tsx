@@ -7,7 +7,6 @@ import {
   CardMedia,
   Chip,
   Collapse,
-  Dialog,
   DialogActions,
   DialogContent,
   FormControl,
@@ -32,7 +31,6 @@ import { ExpandMoreIcon, Icons, SolanaIcon } from "./svgIcons";
 import { Image } from "mui-image";
 import { ColorButton } from "./ColorButton";
 import { ExpandMore } from "./ExpandMore";
-import { HashLoader } from "react-spinners";
 import Countdown from "./Countdown";
 import { NumberInput } from "./NumberInput";
 import { FLOATING_PTS_FIXED_DECIMAL } from "../config";
@@ -42,8 +40,8 @@ import { Loading } from "./Loading";
 
 const toFixed = (value: number) => value.toFixed(FLOATING_PTS_FIXED_DECIMAL);
 const getKey = (item: any, index: number) => `${get(item, "type")}#${Math.floor(Math.random()*100)}#${index}`;
-const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
-  const { t, theme, colorMode, dataModel, expanded, handleExpandClick, opened } = pipe;
+const renderComponent = ({ pipe }: any, { item, index }: any) => {
+  const { t, theme, colorMode, dataModel, expanded, handleExpandClick } = pipe;
   const isDarkMode = theme?.palette?.mode === "dark";
   const { type, items: subItems, hidden = false, ...otherProps } = item;
   const key = getKey(item, index);
@@ -172,7 +170,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       const { spacing } = otherProps;
       return (
         <Grid key={key} container spacing={spacing} {...otherProps}>
-          <TemplateItem key={`${key}#grid#item`} items={subItems} pipe={pipe}></TemplateItem>
+          <TemplateItem key={`${key}#gi`} items={subItems} pipe={pipe}></TemplateItem>
         </Grid>
       );
     },
@@ -192,11 +190,11 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       return (
         <Grid key={key} container spacing={gridListSpacing} {...gridListProps}>
           {subItems &&
-            map(subItems, ({ label, key }) => (
-              <Grid key={`grid#${key}`} item {...breakpoints}>
-                <Paper key={`paper#${key}`} elevation={elevation} sx={sx}>
-                  <Typography key={`typography${key}#h6`} component="h6">{t(processFunc(label))}</Typography>
-                  <Typography key={`typography${key}#p`} component="p">
+            map(subItems, ({ label, idx }) => (
+              <Grid key={`${key}grid#${idx}`} item {...breakpoints}>
+                <Paper key={`${key}paper#${idx}`} elevation={elevation} sx={sx}>
+                  <Typography key={`${key}typography${idx}#h6`} component="h6">{t(processFunc(label))}</Typography>
+                  <Typography key={`${key}typography${idx}#p`} component="p">
                     {get(dataModel, key, 0)}
                   </Typography>
                 </Paper>
@@ -227,8 +225,8 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       console.log(dataPath, get(pipe, dataPath))
       return (<>
         {
-          map(get(pipe, dataPath), (item: any, key: number) => 
-            <Box key={key} {...boxListProps}>
+          map(get(pipe, dataPath), (item: any, idx: number) => 
+            <Box key={`${key}#box${idx}`} {...boxListProps}>
               <TemplateItem items={subItems} pipe={{ ...pipe, item }}></TemplateItem>
             </Box>
           )
