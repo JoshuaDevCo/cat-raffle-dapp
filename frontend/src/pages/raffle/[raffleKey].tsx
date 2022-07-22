@@ -199,33 +199,21 @@ export default function RaffleItemPage(props: {
     updatePage();
     // eslint-disable-next-line
   }, [wallet.connected, router]);
-  const template = raffleDetail({
-    image, name: nftName, description: nftDescription,
-  });
+  const template = raffleDetail({ name: nftName, description: nftDescription });
   return (
     <Box sx={template.sx} >
       <Container maxWidth={template.maxWidth as Breakpoint}>
         <Grid container spacing={template.spacing}>
-          <Grid item xs={12} md={5}>
-            <Card sx={{
-              borderRadius: 4
-            }}>
+          <Grid item xs={template.cardView?.xs} md={template.cardView?.md}>
+            <Card sx={template.cardView?.sx}>
               <CardMedia>
                 <Image src={image || ''} showLoading alt="" />
               </CardMedia>
               <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Typography component="h5" sx={{ fontSize: '1rem', fontWeight: 700 }}>{t('RAFFLE.DETAILS.NAME')}</Typography>
-                  <Typography component="p" sx={{ ml:2 }}>{nftName}</Typography>
-                </Box>
-                <Box>
-                  <Typography component="h5" sx={{ fontSize: '1rem', fontWeight: 700 }}>{t('RAFFLE.DETAILS.DESC')}</Typography>
-                  <Typography component="p">{nftDescription}</Typography>
-                </Box>
+                <TemplateItem items={template.cardView?.items} pipe={{ t }}></TemplateItem>
               </CardContent>
             </Card>
           </Grid>
-
           {map(template.gridCols, ({ items, ...col}) => {
             const colPipe: any = {
               wallet, router, startLoading, closeLoading, t, raffleKey,
