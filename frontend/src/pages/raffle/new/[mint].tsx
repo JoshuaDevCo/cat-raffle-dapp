@@ -178,14 +178,12 @@ export default function CreateNewRafflePage(props: {
                     ml: 2,
                   }}>{nftName}</Typography>
                 </Box>
-                <Box sx={{ display: 'flex' }}>
+                <Box>
                   <Typography component="h5" sx={{
                     fontSize: "1rem",
                     fontWeight: 700,
                   }}>{t("RAFFLE.DETAILS.DESC")}</Typography>
-                  <Typography component="p" sx={{
-                    ml: 2,
-                  }}>{nftDescription}</Typography>
+                  <Typography component="p">{nftDescription}</Typography>
                 </Box>
               </CardContent>
             </Card>
