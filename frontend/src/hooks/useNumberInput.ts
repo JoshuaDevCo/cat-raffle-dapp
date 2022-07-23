@@ -1,3 +1,4 @@
+import { isNumber } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
 import { useSpinner } from "./useSpinner";
 
@@ -59,7 +60,16 @@ export const toNumber = (value: string | undefined) => {
   return Number.isNaN(result) ? undefined : result;
 };
 
-export const numberToString = (value: number | undefined, precision = 0) => {
+export const numberToString = (value: number | any | undefined, precision = 0) => {
+  if (value === undefined || value === null) {
+    return ""
+  }
+  if (!isNumber(value) && value.target && value.target.value) {
+    return value.target.value
+  }
+  if (!isNumber(value)) {
+    return ""
+  }
   const result = value?.toFixed(precision) ?? "";
   if (result === "NaN") return "";
   return result;

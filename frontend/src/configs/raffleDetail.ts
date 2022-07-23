@@ -299,10 +299,11 @@ export const raffleDetail = ({ name, description }: any) => ({
                       max: ({ raffleData }: any) =>
                         (raffleData?.maxTickets || 0) -
                         (raffleData?.tickets || 0),
-                      placeholder:
-                        "RAFFLE.DETAILS.TICKETS_TO_BUY.PLACEHOLDER",
-                      onChange: (value: number, { setTickets }: any) =>
-                        setTickets(value),
+                      onChange: (value: number, { setTickets, raffleData }: any) => {
+                        if (value >= 1 && value <= raffleData?.maxTickets) {
+                          setTickets(value)
+                        }
+                      }
                     },
                     {
                       type: "typography",
@@ -333,7 +334,7 @@ export const raffleDetail = ({ name, description }: any) => ({
                             !raffleData?.isRevealed,
                           type: "button",
                           variant: "contained",
-                          sx: { borderRadius: 2 },
+                          sx: { borderRadius: 2, mr: 2 },
                           onClick: (event: any, { handleReClaim }: any) =>
                             handleReClaim(),
                           label: "RAFFLE.DETAILS.ADMIN.RECLAIM",
@@ -343,7 +344,7 @@ export const raffleDetail = ({ name, description }: any) => ({
                             raffleData?.allClaimed,
                           type: "button",
                           variant: "contained",
-                          sx: { borderRadius: 2 },
+                          sx: { borderRadius: 2, mr: 2 },
                           onClick: (event: any, { handleClose }: any) =>
                             handleClose(),
                           label: "RAFFLE.DETAILS.ADMIN.CLOSE",
@@ -359,7 +360,7 @@ export const raffleDetail = ({ name, description }: any) => ({
                             !(new Date(raffleData?.end || 0) > new Date()),
                           type: "button",
                           variant: "contained",
-                          sx: { borderRadius: 2 },
+                          sx: { borderRadius: 2, mr: 2 },
                           onClick: (event: any, { handlePurchase }: any) =>
                             handlePurchase(),
                           label: "RAFFLE.DETAILS.PURCHASE_TICKET",
@@ -396,7 +397,7 @@ export const raffleDetail = ({ name, description }: any) => ({
                                     raffleData?.tickets === 0,
                                   type: "button",
                                   variant: "contained",
-                                  sx: { borderRadius: 2 },
+                                  sx: { borderRadius: 2, mr: 2 },
                                   onClick: (
                                     event: any,
                                     { handleRevealWinner }: any
