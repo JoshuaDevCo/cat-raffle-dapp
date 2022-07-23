@@ -15,7 +15,7 @@ export default function ReadyCard(props: { pipe: any, image: string, name: strin
           <Image src={image} alt="" showLoading={<Loading/>} ></Image>
         </CardMedia>
         <CardContent>
-          <Typography component="p">{name}</Typography>
+          <Typography noWrap component="p">{name}</Typography>
         </CardContent>
         <CardActions>
           <Button color="primary" variant="contained" sx={{ width: '100%'}}
