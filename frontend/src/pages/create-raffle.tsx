@@ -19,7 +19,6 @@ export default function CreateRaffle(props: {
   const { startLoading, closeLoading, t } = props;
 
   const wallet = useWallet();
-  const [page, setPage] = useState(1);
   const [masterList, setMasterList] = useState<any>([]);
   const [nftList, setNftList] = useState<any>([]);
 

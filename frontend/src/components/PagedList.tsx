@@ -16,8 +16,8 @@ export function PagedList(props: { component: any, pageSize: number, masterList:
   <Grid container spacing={3}>
     {pageList &&
       pageList.length !== 0 &&
-      map(filter(pageList, (itm: any, idx: number) => idx >= pageSize * (page - 1) && idx < pageSize * page), (item: { mint: string, name: string, image: string }, key: number) => (
-        <CustomComponent mint={item.mint} name={item.name} image={item.image} key={key} pipe={{ t }} />
+      map(filter(pageList, (itm: any, idx: number) => idx >= pageSize * (page - 1) && idx < pageSize * page), (item: any, key: number) => (
+        <CustomComponent {...item} key={key} pipe={{ t }} />
       ))
     }
     <Grid item xl={12}>
