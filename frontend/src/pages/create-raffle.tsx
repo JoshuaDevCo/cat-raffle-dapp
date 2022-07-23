@@ -17,7 +17,7 @@ export default function CreateRaffle(props: {
   t: TFunction;
 }) {
   const { startLoading, closeLoading, t } = props;
-
+  const PAGE_SIZE = 24;
   const wallet = useWallet();
   const [masterList, setMasterList] = useState<any>([]);
   const [nftList, setNftList] = useState<any>([]);
@@ -52,7 +52,7 @@ export default function CreateRaffle(props: {
         publicAddress: wallet.publicKey.toBase58(),
         connection: solConnection,
       });
-      const chunked = chunk(nftsList, 20);
+      const chunked = chunk(nftsList, PAGE_SIZE);
       setMasterList(chunked);
       await getPage(1, chunked);
     } catch (error) {
@@ -90,7 +90,7 @@ export default function CreateRaffle(props: {
       backgroundColor: "background.default",
       color: "text.primary",
     }}>
-      <PagedList component={ReadyCard} masterList={masterList} pageList={nftList} t={t} getPage={getPage} pageSize={24}></PagedList>
+      <PagedList component={ReadyCard} masterList={masterList} pageList={nftList} t={t} getPage={getPage} pageSize={PAGE_SIZE}></PagedList>
     </Box>
   );
 }
