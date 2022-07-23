@@ -54,7 +54,7 @@ export default function CreateRaffle(props: {
       });
       const chunked = chunk(nftsList, 20);
       setMasterList(chunked);
-      await getPage(page, chunked);
+      await getPage(1, chunked);
     } catch (error) {
       console.error(error);
     } finally {
