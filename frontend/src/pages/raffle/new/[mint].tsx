@@ -22,12 +22,13 @@ import { createRaffle } from "../../../contexts/transaction";
 import { errorAlert } from "../../../components/toastGroup";
 import { getNFTdetail } from "../../../services/fetchData";
 import Image from "mui-image";
-import { DEFAULT_PAY_TYPE, TICKETS_MAX, TOKEN_PAY_TYPE, WHITELIST_MAX } from "../../../config";
+import { DEBUG, DEFAULT_PAY_TYPE, TICKETS_MAX, TOKEN_PAY_TYPE, WHITELIST_MAX } from "../../../config";
 import { Loading } from "../../../components/Loading";
 import { TFunction } from "react-i18next";
 import { NumberInput } from "../../../components/NumberInput";
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { adminValidation } from "../../../contexts/utils";
 
 export default function CreateNewRafflePage(props: {
   startLoading: Function;
@@ -44,6 +45,7 @@ export default function CreateNewRafflePage(props: {
   const [rewardPrice, setRewardPrice] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("sol");
   const [rewardType, setRewardType] = useState("nft");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const [winnerCount, setWinnerCount] = useState(1);
   const [price, setPrice] = useState(0);
@@ -151,7 +153,17 @@ export default function CreateNewRafflePage(props: {
   };
 
   useEffect(() => {
-    updatePage();
+    if (wallet.publicKey !== null) {
+      const admin = DEBUG ? true : adminValidation(wallet);
+      setIsAdmin(admin);
+      if (admin) {
+        updatePage();
+      } else {
+        router.push("/raffle", '/')
+      }
+    } else {
+      setIsAdmin(false);
+    }
     // eslint-disable-next-line
   }, [wallet.connected]);
   return (

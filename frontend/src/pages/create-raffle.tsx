@@ -4,12 +4,14 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import Promise from "bluebird";
 import { chunk, filter, find, get, map } from "lodash";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { TFunction } from "react-i18next";
 import { PagedList } from "../components/PagedList";
 import ReadyCard from "../components/ReadyCard";
+import { DEBUG } from "../config";
 import { NFTType } from "../contexts/type";
-import { getNftMetaData, solConnection } from "../contexts/utils";
+import { adminValidation, getNftMetaData, solConnection } from "../contexts/utils";
 
 export default function CreateRaffle(props: {
   startLoading: Function;
@@ -19,8 +21,10 @@ export default function CreateRaffle(props: {
   const { startLoading, closeLoading, t } = props;
   const PAGE_SIZE = 24;
   const wallet = useWallet();
+  const router = useRouter();
   const [masterList, setMasterList] = useState<any>([]);
   const [nftList, setNftList] = useState<any>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const getNFTDetails = async (nftsList: Array<NFTType>) => {
     const nftItemList = await Promise.mapSeries(nftsList, async item => {
@@ -77,8 +81,15 @@ export default function CreateRaffle(props: {
 
   useEffect(() => {
     if (wallet.publicKey !== null) {
-      getNFTs();
+      const admin = DEBUG ? true : adminValidation(wallet);
+      setIsAdmin(admin);
+      if (admin) {
+        getNFTs();
+      } else {
+        router.push("/raffle", '/')
+      }
     } else {
+      setIsAdmin(false);
       setNftList([]);
     }
     // eslint-disable-next-line
