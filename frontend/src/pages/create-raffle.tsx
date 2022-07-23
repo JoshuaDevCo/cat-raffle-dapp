@@ -1,12 +1,14 @@
-import { Box, Container, Grid } from "@mui/material";
+import { Box } from "@mui/material";
 import { getParsedNftAccountsByOwner } from "@nfteyez/sol-rayz";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import Promise from "bluebird";
-import { filter } from "lodash";
+import { chunk, filter, find, get, map } from "lodash";
 import { useEffect, useState } from "react";
 import { TFunction } from "react-i18next";
+import { PagedList } from "../components/PagedList";
 import ReadyCard from "../components/ReadyCard";
+import { NFTType } from "../contexts/type";
 import { getNftMetaData, solConnection } from "../contexts/utils";
 
 export default function CreateRaffle(props: {
@@ -17,8 +19,29 @@ export default function CreateRaffle(props: {
   const { startLoading, closeLoading, t } = props;
 
   const wallet = useWallet();
-  const [hide, setHide] = useState(false);
-  const [nftList, setNftList] = useState<any>();
+  const [page, setPage] = useState(1);
+  const [masterList, setMasterList] = useState<any>([]);
+  const [nftList, setNftList] = useState<any>([]);
+
+  const getNFTDetails = async (nftsList: Array<NFTType>) => {
+    const nftItemList = await Promise.mapSeries(nftsList, async item => {
+      const { mint } = item;
+      const existed = find(nftList, itm => !!itm && itm.mint === mint);
+      if (!existed) {
+        try {
+          const uri = await getNftMetaData(new PublicKey(mint));
+          const resp = await fetch(uri);
+          const json = await resp.json();
+          const { image, name } = json;
+          return { mint, image, name };
+        } catch (error) {
+          console.error(error);
+          return { mint, image: '', name: mint }
+        }
+      }
+    })
+    return filter(nftItemList, item => !!item)
+  }
 
   const getNFTs = async () => {
     if (wallet.publicKey === null) {
@@ -30,26 +53,28 @@ export default function CreateRaffle(props: {
         publicAddress: wallet.publicKey.toBase58(),
         connection: solConnection,
       });
-      const nftItemList = await Promise.mapSeries(nftsList, async item => {
-        const { mint } = item;
-        try {
-          const uri = await getNftMetaData(new PublicKey(mint));
-          const resp = await fetch(uri);
-          const json = await resp.json();
-          const { image, name } = json;
-          return { mint, image, name };
-        } catch (error) {
-          console.error(error);
-        }
-      })
-      setNftList(filter(nftItemList, item => !!item));
-      setHide(!hide);
+      const chunked = chunk(nftsList, 20);
+      setMasterList(chunked);
+      await getPage(page, chunked);
     } catch (error) {
       console.error(error);
     } finally {
       closeLoading(false);
     }
   };
+
+  const getPage = async (page: number, array: Array<any> = masterList) => {
+    try {
+      startLoading();
+      const pagedNftList = await getNFTDetails(get(array || masterList, page - 1));
+      const newNftList = [...nftList, ...pagedNftList];
+      setNftList(newNftList);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      closeLoading();
+    }
+  }
 
   useEffect(() => {
     if (wallet.publicKey !== null) {
@@ -66,21 +91,7 @@ export default function CreateRaffle(props: {
       backgroundColor: "background.default",
       color: "text.primary",
     }}>
-      <Container maxWidth='xl'>
-        <Grid container spacing={3}>
-          {nftList &&
-            nftList.length !== 0 &&
-            nftList.map((item: { mint: string, name: string, image: string }, key: number) => (
-              <ReadyCard mint={item.mint} name={item.name} image={item.image} key={key} pipe={{ t }} />
-            ))
-          }
-          <Grid item xl={12}>
-            {nftList && nftList.length === 0 && (
-              <p className="empty-wallet">{t('WALLET.EMPTY')}</p>
-            )}
-          </Grid>
-        </Grid>
-      </Container>
+      <PagedList component={ReadyCard} masterList={masterList} pageList={nftList} t={t} getPage={getPage} pageSize={24}></PagedList>
     </Box>
   );
 }
