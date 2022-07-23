@@ -1,5 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 export const NETWORK = "mainnet-beta";
+// export const NETWORK = "devnet";
 export const ADMINS = [
   {
     address: 'M1NXg8Vtwh8mbcY2g8zXJ3drqeueApjmVzHCxV6zy43',
@@ -22,5 +23,8 @@ export const TOKEN_PAY_TYPE = '$PREY';
 export const FLOATING_PTS_FIXED_DECIMAL = 2;
 
 export const TOKEN_BUYING_HREF = 'https://'
+
+export const WHITELIST_MAX = 50;
+export const TICKETS_MAX = 2000;
 
 export const DEBUG = 1;

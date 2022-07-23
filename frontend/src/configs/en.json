@@ -49,7 +49,15 @@
         "CHOOSE_PAYMENT_METHOD": "Choose payment method",
         "PRICE": "Price*",
         "PRICE_PLACEHOLDER": "Please enter the NFT price",
-        "CHOOSE_REWARD_TYPE": "Choose reward type"
+        "CHOOSE_REWARD_TYPE": "Choose reward type",
+        "WINNER_COUNT": "Winner Count* (Maximum ",
+        "WINNER_COUNT_PLACEHOLDER": "Please enter the winner count.",
+        "REWARD_PRICE": "Reward Price",
+        "REWARD_PRICE_PLACEHOLDER": "Please enter the reward price.",
+        "END_TIME": "End time*",
+        "MAX_TICEKTS": "Tickets* (Maximum ",
+        "MAX_TICEKTS_PLACEHOLDER": "Please enter the max tickets.",
+        "CREATE_THE_RAFFLE": "Create a raffle"
       }
     },
     "WALLET": {

@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
   Box,
+  Button,
   Card,
   CardContent,
   CardMedia,
@@ -13,6 +14,7 @@ import {
   Grid,
   Radio,
   RadioGroup,
+  TextField,
   Typography,
 } from "@mui/material";
 import moment from "moment";
@@ -20,10 +22,12 @@ import { createRaffle } from "../../../contexts/transaction";
 import { errorAlert } from "../../../components/toastGroup";
 import { getNFTdetail } from "../../../services/fetchData";
 import Image from "mui-image";
-import { DEFAULT_PAY_TYPE, TOKEN_PAY_TYPE } from "../../../config";
+import { DEFAULT_PAY_TYPE, TICKETS_MAX, TOKEN_PAY_TYPE, WHITELIST_MAX } from "../../../config";
 import { Loading } from "../../../components/Loading";
 import { TFunction } from "react-i18next";
 import { NumberInput } from "../../../components/NumberInput";
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 
 export default function CreateNewRafflePage(props: {
   startLoading: Function;
@@ -42,9 +46,9 @@ export default function CreateNewRafflePage(props: {
   const [rewardType, setRewardType] = useState("nft");
 
   const [winnerCount, setWinnerCount] = useState(1);
-  const [price, setPrice] = useState<number|undefined>(0);
-  const [maxTickets, setMaxTickets] = useState();
-  const [endTime, setEndTime] = useState(moment(new Date()).format());
+  const [price, setPrice] = useState(0);
+  const [maxTickets, setMaxTickets] = useState(TICKETS_MAX);
+  const [endTime, setEndTime] = useState(moment(new Date()).format('YYYY-MM-DDTHH:mm'));
 
   const handlePayment = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPaymentMethod((event.target as HTMLInputElement).value);
@@ -165,7 +169,7 @@ export default function CreateNewRafflePage(props: {
                 <Image src={image} showLoading={<Loading/>} alt="" />
               </CardMedia>
               <CardContent>
-                <Box>
+                <Box sx={{ display: 'flex' }}>
                   <Typography component="h5" sx={{
                     fontSize: "1rem",
                     fontWeight: 700,
@@ -174,7 +178,7 @@ export default function CreateNewRafflePage(props: {
                     ml: 2,
                   }}>{nftName}</Typography>
                 </Box>
-                <Box>
+                <Box sx={{ display: 'flex' }}>
                   <Typography component="h5" sx={{
                     fontSize: "1rem",
                     fontWeight: 700,
@@ -186,7 +190,7 @@ export default function CreateNewRafflePage(props: {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={6} lg={8} xl={9}>
+          <Grid item xs={12} md={6} lg={8} xl={9} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
             <Typography>{t('RAFFLE.ADMIN.CHOOSE_PAYMENT_METHOD')}</Typography>
             <FormControl>
               <RadioGroup row onChange={handlePayment} defaultValue="sol">
@@ -209,14 +213,18 @@ export default function CreateNewRafflePage(props: {
                 <Typography>{t('RAFFLE.ADMIN.PRICE')}</Typography>
                 <Box sx={{
                   display: 'flex',
+                  alignItems: 'center'
                 }}>
-                  <NumberInput className="number-control" name="price" value={price} onChange={(value?: number) => setPrice(value)} placeholder={t('RAFFLE.ADMIN.PRICE_PLACEHOLDER')}></NumberInput>
-                  <Typography component="span">
-                    {paymentMethod === "sol" ? (
-                      <>{DEFAULT_PAY_TYPE}</>
-                    ) : (
-                      <>{TOKEN_PAY_TYPE}</>
-                    )}
+                  <NumberInput className="number-control" name="price" value={price} min={0.01} step={0.01} precision={2}
+                    onChange={(value?: number) => {
+                      if (!value) return;
+                      if (value >= 0.01) {
+                        setPrice(value)
+                      }
+                    }}
+                    placeholder={t('RAFFLE.ADMIN.PRICE_PLACEHOLDER')}></NumberInput>
+                  <Typography component="span" sx={{ marginLeft: '-70px' }}>
+                    {paymentMethod === "sol" ? DEFAULT_PAY_TYPE : TOKEN_PAY_TYPE }
                   </Typography>
                 </Box>
               </Grid>
@@ -252,80 +260,63 @@ export default function CreateNewRafflePage(props: {
                   </FormControl>
                 </Box>
               </Grid>
+              {rewardType !== "nft" && <Grid item xs={12} md={6}>
+                <Typography>{t('RAFFLE.ADMIN.WINNER_COUNT')} {WHITELIST_MAX})</Typography>
+                <NumberInput className="number-control" name="winner-count" value={winnerCount} min={1} max={WHITELIST_MAX} step={1} precision={0}
+                  onChange={(value?: number) => {
+                    if (!value) return;
+                    if (value >= 1 && value <= WHITELIST_MAX) {
+                      setWinnerCount(value)
+                    }
+                  }}
+                  placeholder={t('RAFFLE.ADMIN.WINNER_COUNT_PLACEHOLDER')}></NumberInput>
+              </Grid>}
+
+              {rewardType === "spl" && <Grid item xs={12} md={6}>
+                <Typography>{t('RAFFLE.ADMIN.REWARD_PRICE')} ({TOKEN_PAY_TYPE})</Typography>
+                <NumberInput className="number-control" name="reward-price" value={rewardPrice} min={0.01} step={0.01} precision={2}
+                  onChange={(value?: number) => {
+                    if (!value) return;
+                    if (value >= 0.01) {
+                      setRewardPrice(value)
+                    }
+                  }}
+                  placeholder={t('RAFFLE.ADMIN.REWARD_PRICE_PLACEHOLDER')}></NumberInput>
+              </Grid>}
+
+              <Grid item xs={12} md={6}>
+                <Typography>{t('RAFFLE.ADMIN.END_TIME')}</Typography>
+                <LocalizationProvider dateAdapter={AdapterMoment}>
+                  <DateTimePicker
+                    renderInput={(props) => <TextField {...props} />}
+                    value={endTime}
+                    onChange={(value: any, keyboardInputValue?: string | undefined) => {
+                      setEndTime(value?.format('YYYY-MM-DDTHH:mm') ?? "");
+                    }}
+                  />
+                </LocalizationProvider>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Typography>{t('RAFFLE.ADMIN.MAX_TICEKTS')} {TICKETS_MAX})</Typography>
+                <NumberInput className="number-control" name="max-tickets" value={maxTickets} min={1} max={TICKETS_MAX} step={1} precision={0}
+                  onChange={(value?: number) => {
+                    if (!value) return;
+                    if (value >= 1 && value <= TICKETS_MAX) {
+                      setMaxTickets(value)
+                    }
+                  }}
+                  placeholder={t('RAFFLE.ADMIN.MAX_TICEKTS_PLACEHOLDER')}></NumberInput>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Button color="primary" variant="contained" sx={{ width: '100%', mt: 2 }}
+                  onClick={() => handleCreate()}>
+                  {t('RAFFLE.ADMIN.CREATE_THE_RAFFLE')}
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
-    <main>
-      <div className="container">
-        <div className="create-content">
-
-          <div className="create-panel">
-            <div className="row">
-              {rewardType !== "nft" && (
-                <div className="col-half">
-                  <div className="form-control">
-                    <label>Winner Count* (Maximum 50)</label>
-                    <input
-                      value={winnerCount}
-                      name="winner-count"
-                      onChange={(e: any) => setWinnerCount(e.target.value)}
-                      placeholder="Please enter the winner count."
-                    />
-                  </div>
-                </div>
-              )}
-              {rewardType === "spl" && (
-                <div className="col-half">
-                  <div className="form-control">
-                    <label>Reward Price ({TOKEN_PAY_TYPE})</label>
-                    <input
-                      value={rewardPrice}
-                      name="winner-count"
-                      onChange={(e: any) => setRewardPrice(e.target.value)}
-                      placeholder="Please enter the winner count."
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="row">
-              <div className="col-half">
-                <div className="form-control">
-                  <label>End time*</label>
-                  <input
-                    type="datetime-local"
-                    value={endTime}
-                    name="end-time"
-                    onChange={(e) => setEndTime(e.target.value)}
-                    placeholder="Please choose end time."
-                  />
-                </div>
-              </div>
-              <div className="col-half">
-                <div className="form-control">
-                  <label>Tickets* (Maximum 2000)</label>
-                  <input
-                    value={maxTickets}
-                    name="max-tickets"
-                    onChange={(e: any) => setMaxTickets(e.target.value)}
-                    placeholder="Please enter the max tickets."
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-half">
-                <button
-                  className="btn-main mt-10"
-                  onClick={() => handleCreate()}
-                >
-                  Create a raffle
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
         </Grid>
       </Container>
     </Box>
