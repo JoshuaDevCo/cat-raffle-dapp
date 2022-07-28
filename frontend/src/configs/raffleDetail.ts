@@ -328,10 +328,10 @@ export const raffleDetail = ({ name, description }: any) => ({
                       items: [
                         {
                           hidden: ({ raffleData }: any) =>
-                            new Date(raffleData?.end || 0) < new Date() &&
+                            !(new Date(raffleData?.end || 0) < new Date() &&
                             raffleData?.wl !== 3 &&
                             raffleData?.tickets === 0 &&
-                            !raffleData?.isRevealed,
+                            !raffleData?.isRevealed),
                           type: "button",
                           variant: "contained",
                           sx: { borderRadius: 2, mr: 2 },
@@ -341,7 +341,7 @@ export const raffleDetail = ({ name, description }: any) => ({
                         },
                         {
                           hidden: ({ raffleData }: any) =>
-                            raffleData?.allClaimed,
+                            !raffleData?.allClaimed,
                           type: "button",
                           variant: "contained",
                           sx: { borderRadius: 2, mr: 2 },
@@ -413,8 +413,8 @@ export const raffleDetail = ({ name, description }: any) => ({
                               items: [
                                 {
                                   hidden: ({ raffleData }: any) =>
-                                    !raffleData?.isClaimed &&
-                                    raffleData?.isWinner,
+                                    !(!raffleData?.isClaimed &&
+                                    raffleData?.isWinner),
                                   type: "button",
                                   variant: "contained",
                                   sx: { borderRadius: 2 },
