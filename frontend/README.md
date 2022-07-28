@@ -1,4 +1,4 @@
-# Apex | NFT Raffle Solana
+# Yaku Whitelist | NFT Raffle Solana
 
 ## Requirements
 
