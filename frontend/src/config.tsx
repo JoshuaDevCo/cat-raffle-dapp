@@ -9,13 +9,13 @@ export const ADMINS = [
 
 export const GLOBAL_AUTHORITY_SEED = "global-authority";
 
-export const PROGRAM_ID = "2UJTYXzdemXUydQ9fxYD7ywQXbTGcXZUDcQNRe7khsTQ";
+export const PROGRAM_ID = "2QzwyjJ9owcEm6HWCaEmCVLqBZeKjRniZ3NMT3LV6qvb";
 export const PREY_TOKEN_MINT = new PublicKey(
-  "AW2AKm8v7dGvUssdnAJ9Bbbb74t7JQNPDqGzgpDHH3e"
+  "NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s"
 );
 // export const PREY_TOKEN_MINT = new PublicKey("2Dm1zu8ERJGBs3NLXt8s8Vor3YHwJye5E2pYhLiMHU4L");
 // nYDqQVEaQxLYLh8B8oAFXziMT1bcGrAVigZPL1s3dKc
-export const RAFFLE_SIZE = 66544;
+export const RAFFLE_SIZE = 182544;
 export const DECIMALS = 1000000000;
 export const PREY_DECIMALS = 1000000000;
 
@@ -30,6 +30,6 @@ export const DISCORD = "https://discord.com/****";
 export const TOKEN_BUYING_HREF = "https://";
 
 export const WHITELIST_MAX = 50;
-export const TICKETS_MAX = 2000;
+export const TICKETS_MAX = 5000;
 
 export const DEBUG = 0;
