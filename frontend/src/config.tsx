@@ -1,9 +1,12 @@
 import { PublicKey } from "@solana/web3.js";
 // export const NETWORK = "mainnet-beta";
-export const NETWORK = "devnet";
+export const NETWORK = "mainnet-beta";
 export const ADMINS = [
   {
     address: "M1NXg8Vtwh8mbcY2g8zXJ3drqeueApjmVzHCxV6zy43",
+  },
+  {
+    address: "Auh2DLaxXjFAetZSTfZcMbZv8HPSmv1yziZPmaqnT7Qa",
   },
 ];
 
@@ -20,7 +23,7 @@ export const DECIMALS = 1000000000;
 export const PREY_DECIMALS = 1000000000;
 
 export const DEFAULT_PAY_TYPE = "SOL"; // should not change
-export const TOKEN_PAY_TYPE = "$PREY";
+export const TOKEN_PAY_TYPE = "$YAKU";
 
 export const FLOATING_PTS_FIXED_DECIMAL = 2;
 
