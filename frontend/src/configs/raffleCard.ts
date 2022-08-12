@@ -169,6 +169,7 @@ export const raffleCard = ({
           sx: {
             mt: 2,
           },
+          hidden: true,
           items: [
             {
               type: "typography",

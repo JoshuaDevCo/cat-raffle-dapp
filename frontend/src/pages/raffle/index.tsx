@@ -32,8 +32,8 @@ const RafflePage = (props: {
   } = props;
   return (
     <Box className={className} sx={sx}>
+      {banner && !banner.hidden && <HeroBanner {...banner} />}
       <Container maxWidth={maxWidth}>
-        {banner && !banner.hidden && <HeroBanner {...banner} />}
         <RaffleList items={items} {...otherProps} />
       </Container>
     </Box>

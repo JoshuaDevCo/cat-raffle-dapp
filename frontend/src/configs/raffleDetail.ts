@@ -11,7 +11,7 @@ export const raffleDetail = ({ name, description }: any) => ({
   maxWidth: "xl",
   spacing: 3,
   cardView: {
-    type: 'gridItem',
+    type: "gridItem",
     xs: 12,
     md: 5,
     sx: {
@@ -200,8 +200,7 @@ export const raffleDetail = ({ name, description }: any) => ({
               items: [
                 {
                   type: "empty",
-                  hidden: ({ raffleData }: any) =>
-                    raffleData?.winnerCnt === 1,
+                  hidden: ({ raffleData }: any) => raffleData?.winnerCnt === 1,
                   items: [
                     {
                       type: "typography",
@@ -229,8 +228,7 @@ export const raffleDetail = ({ name, description }: any) => ({
               items: [
                 {
                   type: "empty",
-                  hidden: ({ raffleData }: any) =>
-                    raffleData?.winnerCnt === 1,
+                  hidden: ({ raffleData }: any) => raffleData?.winnerCnt === 1,
                   items: [
                     {
                       type: "typography",
@@ -267,7 +265,7 @@ export const raffleDetail = ({ name, description }: any) => ({
               xs: 12,
               items: [
                 {
-                  hidden: ({ wallet }: any) => wallet.public !== null,
+                  hidden: ({ wallet }: any) => wallet.publicKey !== null,
                   type: "typography",
                   component: "p",
                   sx: {
@@ -282,7 +280,7 @@ export const raffleDetail = ({ name, description }: any) => ({
                   label: "WALLET.PLEASE_CONNECT",
                 },
                 {
-                  hidden: ({ wallet }: any) => wallet.public === null,
+                  hidden: ({ wallet }: any) => wallet.publicKey === null,
                   type: "gridItem",
                   xs: 12,
                   md: 6,
@@ -299,11 +297,14 @@ export const raffleDetail = ({ name, description }: any) => ({
                       max: ({ raffleData }: any) =>
                         (raffleData?.maxTickets || 0) -
                         (raffleData?.tickets || 0),
-                      onChange: (value: number, { setTickets, raffleData }: any) => {
+                      onChange: (
+                        value: number,
+                        { setTickets, raffleData }: any
+                      ) => {
                         if (value >= 1 && value <= raffleData?.maxTickets) {
-                          setTickets(value)
+                          setTickets(value);
                         }
-                      }
+                      },
                     },
                     {
                       type: "typography",
@@ -319,7 +320,7 @@ export const raffleDetail = ({ name, description }: any) => ({
                   ],
                 },
                 {
-                  hidden: ({ wallet }: any) => wallet.public === null,
+                  hidden: ({ wallet }: any) => wallet.publicKey === null,
                   type: "gridItem",
                   items: [
                     {
@@ -328,10 +329,12 @@ export const raffleDetail = ({ name, description }: any) => ({
                       items: [
                         {
                           hidden: ({ raffleData }: any) =>
-                            !(new Date(raffleData?.end || 0) < new Date() &&
-                            raffleData?.wl !== 3 &&
-                            raffleData?.tickets === 0 &&
-                            !raffleData?.isRevealed),
+                            !(
+                              new Date(raffleData?.end || 0) < new Date() &&
+                              raffleData?.wl !== 3 &&
+                              raffleData?.tickets === 0 &&
+                              !raffleData?.isRevealed
+                            ),
                           type: "button",
                           variant: "contained",
                           sx: { borderRadius: 2, mr: 2 },
@@ -413,15 +416,15 @@ export const raffleDetail = ({ name, description }: any) => ({
                               items: [
                                 {
                                   hidden: ({ raffleData }: any) =>
-                                    !(!raffleData?.isClaimed &&
-                                    raffleData?.isWinner),
+                                    !(
+                                      !raffleData?.isClaimed &&
+                                      raffleData?.isWinner
+                                    ),
                                   type: "button",
                                   variant: "contained",
                                   sx: { borderRadius: 2 },
-                                  onClick: (
-                                    event: any,
-                                    { handleClaim }: any
-                                  ) => handleClaim(),
+                                  onClick: (event: any, { handleClaim }: any) =>
+                                    handleClaim(),
                                   label: "RAFFLE.DETAILS.CLAIM",
                                 },
                               ],
@@ -434,9 +437,7 @@ export const raffleDetail = ({ name, description }: any) => ({
                 },
                 {
                   hidden: ({ raffleData }: any) =>
-                    !(
-                      raffleData?.winnerCnt !== 0 && raffleData?.isRevealed
-                    ),
+                    !(raffleData?.winnerCnt !== 0 && raffleData?.isRevealed),
                   type: "gridItem",
                   xs: 12,
                   items: [
@@ -495,8 +496,7 @@ export const raffleDetail = ({ name, description }: any) => ({
                                     ml: 1,
                                     textAlign: "center",
                                   },
-                                  label: ({ item }: any) =>
-                                    `# ${item.index}`,
+                                  label: ({ item }: any) => `# ${item.index}`,
                                 },
                                 {
                                   type: "typegraphy",
