@@ -385,7 +385,7 @@ export type RaffleType = {
           {
             name: "entrants";
             type: {
-              array: ["publicKey", 2000];
+              array: ["publicKey", 5000];
             };
           }
         ];
@@ -892,7 +892,7 @@ export const IDL: RaffleType = {
           {
             name: "entrants",
             type: {
-              array: ["publicKey", 2000],
+              array: ["publicKey", 5000],
             },
           },
         ],

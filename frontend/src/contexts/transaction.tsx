@@ -1,5 +1,11 @@
 import * as anchor from "@project-serum/anchor";
-import { PublicKey, Signer, SystemProgram, Transaction } from "@solana/web3.js";
+import {
+  ComputeBudgetProgram,
+  PublicKey,
+  Signer,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 import {
   Token,
   TOKEN_PROGRAM_ID,
@@ -275,21 +281,30 @@ export const buyTicket = async (
     userAddress,
     PREY_TOKEN_MINT
   );
-  const tx = await program.rpc.buyTickets(bump, new anchor.BN(amount), {
-    accounts: {
-      buyer: userAddress,
-      raffle: raffleKey,
-      globalAuthority,
-      creator,
-      tokenMint: PREY_TOKEN_MINT,
-      userTokenAccount,
-      tokenProgram: TOKEN_PROGRAM_ID,
-      systemProgram: SystemProgram.programId,
-    },
-    instructions: [],
-    signers: [],
+  let tx = new Transaction();
+  const additionalComputeBudgetInstruction = ComputeBudgetProgram.requestUnits({
+    units: 1400000,
+    additionalFee: 0,
   });
-  await solConnection.confirmTransaction(tx, "finalized");
+  tx.add(additionalComputeBudgetInstruction);
+  tx.add(
+    program.instruction.buyTickets(bump, new anchor.BN(amount), {
+      accounts: {
+        buyer: userAddress,
+        raffle: raffleKey,
+        globalAuthority,
+        creator,
+        tokenMint: PREY_TOKEN_MINT,
+        userTokenAccount,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+      },
+      instructions: [],
+      signers: [],
+    })
+  );
+  const txId = await wallet.sendTransaction(tx, solConnection);
+  await solConnection.confirmTransaction(txId, "finalized");
   successAlert("Transaction confirmed!");
 };
 
