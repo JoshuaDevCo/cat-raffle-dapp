@@ -8,22 +8,25 @@ export const ADMINS = [
   {
     address: "Auh2DLaxXjFAetZSTfZcMbZv8HPSmv1yziZPmaqnT7Qa",
   },
+  {
+    address: "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd"
+  }
 ];
 
 export const GLOBAL_AUTHORITY_SEED = "global-authority";
 
-export const PROGRAM_ID = "2QzwyjJ9owcEm6HWCaEmCVLqBZeKjRniZ3NMT3LV6qvb";
+export const PROGRAM_ID = "CMty9AbXpbVnuQZ6q7NwPF13yTaBBrByL2K6bmsVTVgq";
 export const PREY_TOKEN_MINT = new PublicKey(
-  "NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s"
+  "7yDQ7h3WdytwjD64bwMQya6gW6kaqNj3fdjRY3MW9Rp8"
 );
 // export const PREY_TOKEN_MINT = new PublicKey("2Dm1zu8ERJGBs3NLXt8s8Vor3YHwJye5E2pYhLiMHU4L");
 // nYDqQVEaQxLYLh8B8oAFXziMT1bcGrAVigZPL1s3dKc
-export const RAFFLE_SIZE = 182544;
+export const RAFFLE_SIZE = 162544;
 export const DECIMALS = 1000000000;
 export const PREY_DECIMALS = 1000000000;
 
 export const DEFAULT_PAY_TYPE = "SOL"; // should not change
-export const TOKEN_PAY_TYPE = "$YAKU";
+export const TOKEN_PAY_TYPE = "$CAT";
 
 export const FLOATING_PTS_FIXED_DECIMAL = 2;
 

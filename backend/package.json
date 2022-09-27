@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "ts-node": "export ANCHOR_WALLET=/home/death/.config/solana/fantom.json && ts-node ./cli/scripts.ts"
+        "ts-node": "export ANCHOR_WALLET=/home/mbenz/.config/solana/id.json && ts-node ./cli/scripts.ts"
     },
     "dependencies": {
         "@project-serum/anchor": "^0.20.1",

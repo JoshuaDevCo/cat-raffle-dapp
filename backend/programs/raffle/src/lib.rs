@@ -17,7 +17,7 @@ use constants::*;
 use error::*;
 use utils::*;
 
-declare_id!("2UJTYXzdemXUydQ9fxYD7ywQXbTGcXZUDcQNRe7khsTQ");
+declare_id!("CMty9AbXpbVnuQZ6q7NwPF13yTaBBrByL2K6bmsVTVgq");
 
 #[program]
 pub mod raffle {
@@ -57,7 +57,7 @@ pub mod raffle {
         let mut raffle = ctx.accounts.raffle.load_init()?;
         let timestamp = Clock::get()?.unix_timestamp;
 
-        if max_entrants > 2000 {
+        if max_entrants as usize > MAX_ENTRANTS {
             return Err(error!(RaffleError::MaxEntrantsTooLarge));
         }
         if timestamp > end_timestamp {

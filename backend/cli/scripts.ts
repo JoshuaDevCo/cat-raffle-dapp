@@ -18,14 +18,14 @@ import { Raffle } from '../target/types/raffle';
 
 const GLOBAL_AUTHORITY_SEED = "global-authority";
 
-const PROGRAM_ID = "2UJTYXzdemXUydQ9fxYD7ywQXbTGcXZUDcQNRe7khsTQ";
-const PREY_TOKEN_MINT = new PublicKey("AW2AKm8v7dGvUssdnAJ9Bbbb74t7JQNPDqGzgpDHH3e");
+const PROGRAM_ID = "CMty9AbXpbVnuQZ6q7NwPF13yTaBBrByL2K6bmsVTVgq";
+const PREY_TOKEN_MINT = new PublicKey("7yDQ7h3WdytwjD64bwMQya6gW6kaqNj3fdjRY3MW9Rp8");
 // nYDqQVEaQxLYLh8B8oAFXziMT1bcGrAVigZPL1s3dKc
-const RAFFLE_SIZE = 66544;
+const RAFFLE_SIZE = 162544;
 const DECIMALS = 1000000000;
 const PREY_DECIMALS = 1000000000;
 
-anchor.setProvider(anchor.Provider.local(web3.clusterApiUrl('devnet')));
+anchor.setProvider(anchor.Provider.local(web3.clusterApiUrl('mainnet-beta')));
 const solConnection = anchor.getProvider().connection;
 const payer = anchor.getProvider().wallet;
 console.log(payer.publicKey.toBase58());

@@ -20,7 +20,7 @@ impl GlobalPool {
 
 #[account(zero_copy)]
 pub struct RafflePool {
-    // 72+72+32*2000+48*50 = 66544
+    // 72+72+32*5000+48*50 = 162544
     pub creator: Pubkey,                    //32
     pub nft_mint: Pubkey,                   //32
     pub count: u64,                         //8
@@ -35,7 +35,7 @@ pub struct RafflePool {
     pub claimed_winner: [u64; MAX_WINNERS], //50*8
     pub indexes: [u64; MAX_WINNERS],        //50*8
     pub winner: [Pubkey; MAX_WINNERS],      //32*50
-    pub entrants: [Pubkey; MAX_ENTRANTS],   //32*2000
+    pub entrants: [Pubkey; MAX_ENTRANTS],   //32*5000
 }
 
 impl Default for RafflePool {
